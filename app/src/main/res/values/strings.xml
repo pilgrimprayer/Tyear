@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Tyear</string>
+
+        <string name="title_diary">日记</string>
+        <string name="title_stat">统计</string>
+        <string name="title_mine">我的</string>
+
+
+</resources>
