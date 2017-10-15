@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+
+ >
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:contentInsetStart="0dp"
+            app:layout_scrollFlags="scroll"
+
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary">
+
+
+                <ImageView
+                    android:id="@+id/cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    app:srcCompat="@drawable/ic_clear_black_24dp"
+                    android:layout_alignTop="@+id/titlename"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginStart="14dp" />
+
+                <TextView
+                    android:id="@+id/titlename"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="问题编辑"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+                <ImageView
+                    android:id="@+id/save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    app:srcCompat="@drawable/ic_done_black_24dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_alignTop="@+id/titlename"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
+        android:weightSum="1">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.03"
+            android:paddingTop="16dp">
+
+            <ImageView
+                android:id="@+id/Image1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_que_type_black_24dp" />
+
+
+            <TextView
+                android:id="@+id/textType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="18dp"
+                android:layout_marginStart="18dp"
+                android:layout_toEndOf="@+id/Image1"
+                android:layout_toRightOf="@+id/Image1"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:text="类型" />
+
+
+            <Spinner
+                android:id="@+id/spinner1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textType"
+                android:layout_marginLeft="13dp"
+                android:layout_marginStart="13dp"
+                android:layout_toEndOf="@+id/textType"
+                android:layout_toRightOf="@+id/textType"
+                android:entries="@array/que_type" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.03">
+
+            <ImageView
+                android:id="@+id/reportImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_que_title" />
+
+
+            <EditText
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="18dp"
+                android:layout_marginStart="18dp"
+                android:layout_toEndOf="@+id/reportImage"
+                android:layout_toRightOf="@+id/reportImage"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:text="今天作息如何？" />
+
+            <ImageView
+                android:id="@+id/ImageMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textView3"
+
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="22dp"
+                android:layout_marginRight="22dp"
+                android:paddingBottom="12dp"
+                app:srcCompat="@drawable/ic_folder_special_black_24dp" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.03">
+
+            <ImageView
+                android:id="@+id/lableImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_que_label_24dp" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@+id/lableImage"
+                android:layout_toRightOf="@+id/lableImage"
+                android:orientation="horizontal">
+
+
+                <RadioButton
+                    android:id="@+id/radioButton"
+                    style="@style/label"
+                    android:checked="true"
+                    android:text="健康" />
+
+                <RadioButton
+                    android:id="@+id/radioButton2"
+                    style="@style/label"
+                    android:checked="false"
+                    android:text="学习" />
+
+                <RadioButton
+                    android:id="@+id/radioButton3"
+                    style="@style/label"
+                    android:checked="false"
+                    android:text="情感" />
+            </RadioGroup>
+
+            <!-- <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/button5"
+                android:layout_alignBottom="@+id/button5"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_toEndOf="@+id/button5"
+                android:layout_toRightOf="@+id/button5"
+                style="@style/label"
+                android:text="习惯" />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/LabelMore"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_toEndOf="@+id/lableImage"
+                android:layout_toRightOf="@+id/lableImage"
+                style="@style/label"
+                android:text="健康" />-->
+
+            <ImageView
+                android:id="@+id/LabelMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/lableImage"
+                android:layout_marginEnd="22dp"
+                android:layout_marginRight="22dp"
+                android:paddingBottom="12dp"
+                app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.03">
+
+            <ImageView
+                android:id="@+id/TimeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_alarm_black_24dp" />
+
+
+            <TextView
+                android:id="@+id/textType2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="18dp"
+                android:layout_marginStart="18dp"
+                android:layout_toEndOf="@+id/TimeImage"
+                android:layout_toRightOf="@+id/TimeImage"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:text="重复" />
+
+            <Spinner
+                android:id="@+id/spinner3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textType2"
+                android:layout_alignBottom="@+id/textType2"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:layout_toEndOf="@+id/textType2"
+                android:layout_toRightOf="@+id/textType2"
+                android:entries="@array/que_alarm" />
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.03">
+
+            <ImageView
+                android:id="@+id/watchIma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_remove_red_eye_black_24dp" />
+
+
+            <TextView
+                android:id="@+id/watchText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="18dp"
+                android:layout_marginStart="18dp"
+                android:layout_toEndOf="@+id/watchIma"
+                android:layout_toRightOf="@+id/watchIma"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:text="统计监控" />
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignBaseline="@+id/watchText"
+                android:layout_alignBottom="@+id/watchText"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="13dp"
+                android:layout_marginRight="13dp" />
+
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

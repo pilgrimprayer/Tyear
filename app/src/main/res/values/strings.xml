@@ -4,6 +4,125 @@
         <string name="title_diary">日记</string>
         <string name="title_stat">统计</string>
         <string name="title_mine">我的</string>
+    <string name="title_removeItem">删除</string>
+    <string name="title_editItem">编辑</string>
+
+    <string-array name="que_type" >
+        <item >文本</item>
+        <item >单选</item>
+        <item >多选</item>
+       </string-array>
+
+    <string-array name="que_alarm" >
+        <item >每天</item>
+        <item >每周</item>
+        <item >每三天</item>
+    </string-array>
+    <!--文本问题库-->
+<!--    <string name="question_item_summary"> 今天过得怎么样？</string>
+    <string name="question_item_happy"> 今天有什么开心的事？</string>
+    <string name="question_item_think"> 今天的感想是什么？</string>
+
+    <string name="question_item_eat"> 今天我吃了什么？</string>
+    <string name="question_item_new_things"> 今天发生了什么新鲜事？</string>
+&lt;!&ndash;    <string name="question_item_complete"> 今天我完成了什么？</string>
+    <string name="question_item_book"> 今天我读了什么书？</string>
+    <string name="question_item_music"> 今天听了什么音乐？</string>&ndash;&gt;
+
+    <string name="question_item_family"> 今天为家人做了哪些事？</string>
+    <string name="question_item_thanks"> 今天应该感谢什么？</string>
+&lt;!&ndash;    <string name="question_item_tomorrow_better"> 我让明天更美好了吗？</string>&ndash;&gt;-->
+
+    <string-array name="question_text_list">
+        <!--<item>@string/question_item_summary</item>-->
+        <item>今天有什么开心的事？</item>
+
+   <!--     <item>@string/question_item_eat</item>-->
+        <item>今天有什么做得不好的事？</item>
+  <!--      <item>@string/question_item_complete</item>
+        <item>@string/question_item_book</item>
+        <item>@string/question_item_music</item>  -->
+        <item>今天为家人做了哪些事？</item>
+        <item>今天有没有浪费时间</item>
+<!--        <item>@string/question_item_tomorrow_better</item>-->
+
+    </string-array>
 
 
+
+<!--单选问题库-->
+<!--    <string name="question_item_exercise"> 今天锻炼身体了吗？</string>
+    <string name="question_item_cost"> 今天花钱合理了吗？</string>
+    <string name="question_item_rest"> 今天作息正常吗？</string>
+    <string name="question_item_rest"> 今天作息正常吗？</string>-->
+
+    <string-array name="question_radio_list">
+        <item>今天锻炼身体了吗</item>
+        <item>今天花钱合理了吗？</item>
+        <item>今天作息正常吗？</item>
+        <item>今天精神状态如何？</item>
+    </string-array>
+    <string-array name="radio_ansewer_list">
+        <item>@array/radio_exercise_answer1</item>
+        <item>@array/radio_cost_answer2</item>
+        <item>@array/radio_rest_answer3</item>
+        <item>@array/radio_status_answer4</item>
+    </string-array>
+    <string-array name="radio_exercise_answer1">
+        <item>萎靡一天</item>
+        <item>轻量运动</item>
+        <item>专业锻炼</item>
+    </string-array>
+
+    <string-array name="radio_cost_answer2">
+        <item>随心所欲</item>
+        <item>有所克制</item>
+        <item>精打细算，落实理财计划</item>
+    </string-array>
+
+    <string-array name="radio_rest_answer3">
+        <item>颠三倒四，白天不懂夜的黑</item>
+        <item>靠闹钟提醒，很难受</item>
+        <item>靠生物钟早睡早起</item>
+    </string-array>
+    <string-array name="radio_status_answer4">
+        <item>精神充沛</item>
+        <item>一般</item>
+        <item>精神不济</item>
+    </string-array>
+    <!--多选问题库-->
+    <string-array name="question_check_list">
+        <item>今天为四级做了哪些努力？</item>
+        <item>今天提升了哪些技术栈？</item>
+
+    </string-array>
+
+
+    <string-array name="check_Englishe_answer1">
+        <item>听力</item>
+        <item>阅读</item>
+        <item>作文</item>
+    </string-array>
+
+    <string-array name="check_cs_answer2">
+        <item>java</item>
+        <item>Android</item>
+        <item>web前端</item>
+    </string-array>
+
+
+
+    <!--标签库-->
+    <string name="label_item_work"> 工作</string>
+    <string name="label_item_learn"> 学习</string>
+    <string name="label_item_emotion"> 情感</string>
+    <string name="label_item_rethink"> 反思</string>
+
+
+    <string-array name="label_list">
+        <item>@string/label_item_work</item>
+        <item>@string/label_item_learn</item>
+        <item>@string/label_item_emotion</item>
+        <item>@string/label_item_rethink</item>
+    </string-array>
 </resources>
