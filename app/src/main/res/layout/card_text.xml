@@ -43,8 +43,10 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
-                android:text="和老爸出去逛街，帮他挑了很多衣服嘻嘻帮他挑了很多衣服嘻嘻帮他挑了很多衣服嘻嘻"
-                android:textSize="14sp" />
+                android:hint="请输入"
+                android:textSize="14sp"
+
+                />
 
 
 

@@ -27,8 +27,6 @@ public class BaseCheckQue extends BaseEntity{
 //类型
     @DatabaseField(columnName = "type")
     private int  Type;
-    //012 文本 单选 多选//todo//可忽略
-
 
 //监控开关
     @DatabaseField(columnName = "IsStatistics")

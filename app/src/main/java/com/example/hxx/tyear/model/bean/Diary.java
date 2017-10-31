@@ -27,10 +27,10 @@ public class Diary extends BaseEntity {
 
     // 问题卡片
     @ForeignCollectionField(eager = false)
-    private ForeignCollection<BaseRadioQue> baseRadioQues;
+    private ForeignCollection<BaseQue> baseQues;
 
     @ForeignCollectionField(eager = false)
-    private SpecialQue specialQue;
+    private ForeignCollection<SpecialQue> specialQue;
 
 
     public int getId() {
@@ -59,23 +59,29 @@ public class Diary extends BaseEntity {
         return modifyTime;
     }
 
-    public ArrayList<BaseRadioQue> getBaseRadioQues() {
-        ArrayList<BaseRadioQue> list = new ArrayList<>();
-        if (baseRadioQues != null) {
-            list.addAll(baseRadioQues);
+    public ArrayList<BaseQue> getBaseQues() {
+        ArrayList<BaseQue> list = new ArrayList<>();
+        if (baseQues != null) {
+            list.addAll(baseQues);
             return list;
         }
 
         return list;
     }
 
-    public SpecialQue getSpecialQue() {
-        return specialQue;
+    public ArrayList<SpecialQue> getSpecialQue() {
+        ArrayList<SpecialQue> list = new ArrayList<>();
+        if (specialQue != null) {
+            list.addAll(specialQue);
+            return list;
+        }
+
+        return list;
     }
 
-    public void setSpecialQue(SpecialQue specialQue) {
+/*    public void setSpecialQue(SpecialQue specialQue) {
         this.specialQue = specialQue;
-    }
+    }*/
 
     @Override
     public String toString() {
@@ -84,7 +90,7 @@ public class Diary extends BaseEntity {
                 ", date=" + date +
                 ", modifyTime=" + modifyTime +
                       ", specialQue='" + getSpecialQue() + '\'' +
-                ", baseRadioQues=" + getBaseRadioQues() +
+                ", baseQues=" + getBaseQues() +
                 '}';
 
     }

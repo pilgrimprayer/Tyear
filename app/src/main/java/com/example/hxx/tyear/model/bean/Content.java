@@ -19,28 +19,20 @@ public class Content extends BaseEntity{
     private String name;
 
 
-    public BaseRadioQue getBaseRadioQue() {
-        return baseRadioQue;
-    }
-
-    public void setBaseRadioQue(BaseRadioQue baseRadioQue) {
-        this.baseRadioQue = baseRadioQue;
-    }
-
-    public BaseCheckQue getBaseCheckQue() {
-        return baseCheckQue;
-    }
-
-    public void setBaseCheckQue(BaseCheckQue baseCheckQue) {
-        this.baseCheckQue = baseCheckQue;
-    }
-
-    @DatabaseField(canBeNull = true, foreign = true)
-    private BaseRadioQue baseRadioQue;
+    @DatabaseField(columnName = "is_checked")
+    private boolean IsChecked;
 
 
     @DatabaseField(canBeNull = true, foreign = true)
-    private BaseCheckQue baseCheckQue;
+    private BaseQue baseQue;
+    public BaseQue getBaseQue() {
+        return baseQue;
+    }
+
+    public void setBaseQue(BaseQue baseQue) {
+        this.baseQue = baseQue;
+    }
+
 
 
     public int getId() {
@@ -60,14 +52,20 @@ public class Content extends BaseEntity{
     }
 
 
+    public boolean isChecked() {
+        return IsChecked;
+    }
 
+    public void setIsChecked(boolean checked) {
+        IsChecked = checked;
+    }
 
     @Override
     public String toString() {
-        return "Label{" +
+        return "Content{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-          
+                ", ischecked='" + isChecked() +
                 '}';
     }
 }

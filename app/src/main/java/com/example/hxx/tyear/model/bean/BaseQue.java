@@ -5,11 +5,13 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.ArrayList;
+
 /**
  * Created by hxx on 2017/10/13.
  */
-@DatabaseTable(tableName = "check_que")
-public class BaseRadioQue extends BaseEntity{
+@DatabaseTable(tableName = "base_que")
+public class BaseQue extends BaseEntity{
 
     @DatabaseField(generatedId = true)//主键
     private int id;
@@ -17,16 +19,11 @@ public class BaseRadioQue extends BaseEntity{
     @DatabaseField(columnName = "title")
     private String title;
 //内容
-    //？？多选 单选 怎么设定
-    //？？！设定成数组
-/*    @DatabaseField(columnName = "content")
-    private String content;*/
-    @ForeignCollectionField(eager = false)
-    private ForeignCollection<Content> content;
+
 
 //类型
     @DatabaseField(columnName = "type")
-    private int  Type;
+    private int  type;
     //012 文本 单选 多选
 
 
@@ -38,9 +35,26 @@ public class BaseRadioQue extends BaseEntity{
 
     @ForeignCollectionField(eager = false)
     private ForeignCollection<Label> label;
-//所属日记
-    @DatabaseField(canBeNull = false, foreign = true)
+
+    @ForeignCollectionField(eager = false)
+    private ForeignCollection<Content> content;
+
+
+    //所属日记
+    @DatabaseField(canBeNull = true, foreign = true)
     private Diary diary;
+
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
+    //是否已删除
+    @DatabaseField(columnName = "isDelete")
+    public boolean isDelete;
 
     public boolean isStatistics() {
         return IsStatistics;
@@ -64,16 +78,26 @@ public class BaseRadioQue extends BaseEntity{
     public void setTitle(String subject) {
         this.title = subject;
     }
-/*
-    public String getContent() {
-        return content;
+
+public ArrayList<Content> getContent() {
+    ArrayList<Content> list = new ArrayList<>();
+    if (content != null) {
+        list.addAll(content);
+        return list;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }*/
+    return list;
+}
 
+    public ArrayList<Label> getLabel() {
+        ArrayList<Label> list = new ArrayList<>();
+        if (label != null) {
+            list.addAll(label);
+            return list;
+        }
 
+        return list;
+    }
     public Diary getDiary() {
         return diary;
     }
@@ -83,19 +107,21 @@ public class BaseRadioQue extends BaseEntity{
     }
 
     public int getType() {
-        return Type;
+        return type;
     }
 
     public void setType(int type) {
-        Type = type;
+        this.type = type;
     }
     @Override
     public String toString() {
         return "BasicalQuestion{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-
+                ", content='" + getContent() + '\'' +
+                ", type='" + type + '\'' +
+                ", IsStatistics='" + IsStatistics + '\'' +
+                ", label='" + getLabel() +
                 '}';
     }
 }

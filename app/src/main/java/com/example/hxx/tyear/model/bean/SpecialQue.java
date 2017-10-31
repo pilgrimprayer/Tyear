@@ -20,7 +20,7 @@ public class SpecialQue extends BaseEntity{
 
 
 
-    @DatabaseField(canBeNull = false, foreign = true)
+    @DatabaseField(canBeNull = true, foreign = true)
     private Diary diary;
 
     public int getId() {

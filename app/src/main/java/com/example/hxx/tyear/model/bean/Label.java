@@ -17,44 +17,25 @@ public class Label extends BaseEntity{
 
     @DatabaseField(columnName = "name")
     private String name;
-    @DatabaseField(canBeNull = true, foreign = true)
-    private BaseTextQue baseTextQue;
-
-
-
-    public BaseTextQue getBaseTextQue() {
-        return baseTextQue;
-    }
-
-    public void setBaseTextQue(BaseTextQue baseTextQue) {
-        this.baseTextQue = baseTextQue;
-    }
-
-
-
-
-    public BaseRadioQue getBaseRadioQue() {
-        return baseRadioQue;
-    }
-
-    public void setBaseRadioQue(BaseRadioQue baseRadioQue) {
-        this.baseRadioQue = baseRadioQue;
-    }
-
-    public BaseCheckQue getBaseCheckQue() {
-        return baseCheckQue;
-    }
-
-    public void setBaseCheckQue(BaseCheckQue baseCheckQue) {
-        this.baseCheckQue = baseCheckQue;
-    }
 
     @DatabaseField(canBeNull = true, foreign = true)
-    private BaseRadioQue baseRadioQue;
+    private BaseQue baseQue;
 
 
-    @DatabaseField(canBeNull = true, foreign = true)
-    private BaseCheckQue baseCheckQue;
+
+
+
+    public BaseQue getBaseQue() {
+        return baseQue;
+    }
+
+    public void setBaseQue(BaseQue baseQue) {
+        this.baseQue = baseQue;
+    }
+
+
+
+
 
 
     public int getId() {
@@ -65,11 +46,11 @@ public class Label extends BaseEntity{
         this.id = id;
     }
 
-    public String getSitlet() {
+    public String getName() {
         return name;
     }
 
-    public void setnamet(String subject) {
+    public void setName(String subject) {
         this.name = subject;
     }
 

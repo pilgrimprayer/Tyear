@@ -1,15 +1,14 @@
 package com.example.hxx.tyear.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.hxx.tyear.R;
 import com.example.hxx.tyear.model.bean.BaseCheckQue;
-import com.example.hxx.tyear.model.bean.BaseRadioQue;
+import com.example.hxx.tyear.model.bean.BaseQue;
 import com.example.hxx.tyear.model.bean.BaseTextQue;
 import com.example.hxx.tyear.model.bean.Content;
-import com.example.hxx.tyear.model.dao.BaseCheckQueDao;
-import com.example.hxx.tyear.model.dao.BaseRadioQueDao;
-import com.example.hxx.tyear.model.dao.BaseTextQueDao;
+import com.example.hxx.tyear.model.dao.BaseQueDao;
 import com.example.hxx.tyear.model.dao.ContentDao;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.List;
  */
 public class BaseQueManager {
     private Context mContext;
-
+    List<BaseQue> baseQueList = new ArrayList<>();
     public BaseQueManager(Context context) {
         this.mContext = context;
     }
@@ -30,29 +29,26 @@ public class BaseQueManager {
         String[] textQuestionArray = mContext.getResources().getStringArray(R.array.radio_ansewer_list);//从本环境 的R文档里获得资源
 //        if (!SpfUtils.getBoolean(mContext, SpfConfig.IS_INIT_BaseQue, false)) {
         //文本库建立
-        List<BaseTextQue> textQueList = getTextQueList();//生成文本问题列表
-        List<BaseRadioQue> radioQueList = getRadioQueList();//生成单选问题列表
-        List<BaseCheckQue> checkQueList = getCheckQueList();//生成单选问题列表
-        //todo//耦合
-        //文本
-        BaseTextQueDao baseTextQueDao = new BaseTextQueDao(mContext);//创建数据库操作对象-本环境下mContex 关联
-       if(baseTextQueDao.queryAll()==null){
-           baseTextQueDao.delelteAll();//删除数据库所有内容
-           baseTextQueDao.insert(textQueList);//将问题们添加进数据库表格里
-       }
-       //单选
-        BaseRadioQueDao baseRadioQueDao = new BaseRadioQueDao(mContext);//创建数据库操作对象-本环境下mContex 关联
-        if(baseRadioQueDao.queryAll()==null){
-            baseRadioQueDao.delelteAll();//删除数据库所有内容
-            baseRadioQueDao.insert(radioQueList);//将问题们添加进数据库表格里
-        }
-       //多选
-        BaseCheckQueDao baseCheckQueDao = new BaseCheckQueDao(mContext);//创建数据库操作对象-本环境下mContex 关联
-        if(baseCheckQueDao.queryAll()==null){
-            baseCheckQueDao.delelteAll();//删除数据库所有内容
-            baseCheckQueDao.insert(checkQueList);//将问题们添加进数据库表格里
-        }
+       // List<BaseTextQue> textQueList = getTextQueList();//生成文本问题列表
+        getQueList(R.array.question_text_list,0);//生成文本问题列表
+        getQueList(R.array.question_radio_list,1);//生成单选问题列表
+        getQueList(R.array.question_check_list,2);//生成多选问题列表
+        //List<BaseCheckQue> checkQueList = getCheckQueList();//生成单选问题列表
 
+       
+        //所有
+        BaseQueDao baseQueDao = new BaseQueDao(mContext);//创建数据库操作对象-本环境下mContex 关联
+    // if(baseQueDao.queryAll()==null){
+
+ baseQueDao.delelteAll();//删除数据库所有内容*/
+        //todo//每次都添加？？
+
+
+      // }
+         baseQueDao.insert(baseQueList);//将问题们添加进数据库表格里
+        List<BaseQue> list = baseQueDao.queryAll();
+
+       Log.i("Test", "diary:" + list.toString());
 
 
 /**
@@ -66,99 +62,115 @@ public class BaseQueManager {
                 R.array.radio_status_answer4
 
         };
-        int i=0;
-        for (BaseRadioQue baseRadioQue : radioQueList) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
-
-            RadioAnswerToQue(RadioAnswerResourceList[i++],baseRadioQue);
-        }
-
-        /**
-         * 所有多选问题绑定
-         */
-
         int CheckAnswerResourceList[]={
                 R.array.check_Englishe_answer1,
                 R.array.check_cs_answer2,
 
 
         };
-        int j=0;
-        for (BaseCheckQue baseCheckQue : checkQueList) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
+        String[] AnswerArray;
+        ContentDao contentDao = new ContentDao(mContext);//创建数据库操作对象-本环境下mContex 关联
+        contentDao.delelteAll();//删除数据库所有内容
+        //todo//每次都添加？
+        int i=0,j=0;
+        for (BaseQue baseQue : baseQueList) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
+            if(baseQue.getType()==1){//若类型为单选则绑定相应答案
+               // AnswerToQue(RadioAnswerResourceList[i++], baseQue);
 
-            CheckAnswerToQue(CheckAnswerResourceList[j++],baseCheckQue);
+
+              AnswerArray = mContext.getResources().getStringArray(RadioAnswerResourceList[i++]);//从本环境 的R文档里获得资源
+                List<Content> AnswerList = getContent(AnswerArray);//回答问题列表
+
+
+
+                for (Content content : AnswerList) {//遍历所有回答选项
+                    //一个问题对应生成一个对象 BaseQue
+                    content.setBaseQue(baseQue);//遍历radio问题数组
+
+
+                }
+
+              //  contentDao.delelteAll();//删除数据库所有内容
+                contentDao.insert(AnswerList);//将问题们添加进数据库表格里
+
+
+            }
+            if(baseQue.getType()==2){//若类型为多选则绑定相应答案
+
+                //AnswerToQue(CheckAnswerResourceList[j++],baseQue);
+
+
+               AnswerArray = mContext.getResources().getStringArray(CheckAnswerResourceList[j++]);//从本环境 的R文档里获得资源
+                List<Content> AnswerList = getContent(AnswerArray);//回答问题列表
+
+
+
+                for (Content content : AnswerList) {//遍历所有回答选项
+                    //一个问题对应生成一个对象 BaseQue
+                    content.setBaseQue(baseQue);//遍历radio问题数组
+
+                }
+
+                //  contentDao.delelteAll();//删除数据库所有内容
+                contentDao.insert(AnswerList);//将问题们添加进数据库表格里
+            }
+            
+        }
+
+        List<Content> tlist = contentDao.queryAll();
+
+        Log.i("Test", "diary:" + tlist.toString());
+
+        List<BaseQue> mlist = baseQueDao.queryAll();
+
+        Log.i("Test", "diary:" + mlist.toString());
+
+        List<Content> t2list = contentDao.queryAll();
+
+        Log.i("Test", "diary:" + t2list.toString());
+    }
+
+    public void getQueList(int QueResource,int QueType) {
+
+        String[] QuestionArray = mContext.getResources().getStringArray(QueResource);//从本环境 的R文档里获得资源
+        String[] radioQuestionArray = mContext.getResources().getStringArray(R.array.question_radio_list);//从本环境 的R文档里获得资源
+        String[] RadioAnswerArray = mContext.getResources().getStringArray(R.array.radio_exercise_answer1);//从本环境 的R文档里获得资源
+        //先遍历textQuesion   获取问题入textQuestionArray
+        //生成文本问题列表
+
+
+        for (String question : QuestionArray) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
+            //一个问题对应生成一个对象 BaseQue
+            BaseQue baseQue = new BaseQue();
+
+            baseQue.setType(QueType);
+            baseQue.setTitle(question);//加入问题题目
+            baseQueList.add(baseQue);//加入对象集合
         }
 
     }
+    
+    
 
-    /**
-     * 一个多选问题绑定
-     * @param answeRresource
-     * @param baseCheckQue
-     */
 
-    public void CheckAnswerToQue(int answeRresource, BaseCheckQue baseCheckQue){
+    public void AnswerToQue(int answeRresource, BaseQue baseQue){
 
         String[] AnswerArray = mContext.getResources().getStringArray(answeRresource);//从本环境 的R文档里获得资源
         List<Content> AnswerList = getContent(AnswerArray);//回答问题列表
 
 
-        for (Content content : AnswerList) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
-            //一个问题对应生成一个对象 BaseRadioQue
-            content.setBaseCheckQue(baseCheckQue);//遍历radio问题数组
+
+            for (Content content : AnswerList) {//遍历所有回答选项
+                //一个问题对应生成一个对象 BaseQue
+                content.setBaseQue(baseQue);//遍历radio问题数组
 
 
         }
-        ContentDao contentDao = new ContentDao(mContext);//创建数据库操作对象-本环境下mContex 关联
-        if(contentDao.queryAll()==null){
-            contentDao.delelteAll();//删除数据库所有内容//
-            contentDao.insert(AnswerList);//将问题们添加进数据库表格里
-        }
-
-    }
-    /**
-     * 一个单选问题绑定，同时回答加入数据库表
-     * @param answeRresource 回答选项string文件资源
-     * @param baseRadioQue 目标问题-单选
-     */
-    public void RadioAnswerToQue(int answeRresource, BaseRadioQue baseRadioQue){
-
-        String[] RadioAnswerArray1 = mContext.getResources().getStringArray(answeRresource);//从本环境 的R文档里获得资源
-        List<Content> RadioAnswerList1 = getContent(RadioAnswerArray1);//回答问题列表
 
         ContentDao contentDao = new ContentDao(mContext);//创建数据库操作对象-本环境下mContex 关联
         contentDao.delelteAll();//删除数据库所有内容
-        contentDao.insert(RadioAnswerList1);//将问题们添加进数据库表格里
-
-            for (Content content : RadioAnswerList1) {//遍历所有回答选项
-                //一个问题对应生成一个对象 BaseRadioQue
-                content.setBaseRadioQue(baseRadioQue);//遍历radio问题数组
-
-
-        }
+        contentDao.insert(AnswerList);//将问题们添加进数据库表格里
     }
-
-    //->返回问题对象列表
-    //TODO//抽象 TEXT RADIO CHECK 出 BASEQUE
-    public List<BaseTextQue> getTextQueList() {
-        String[] textQuestionArray = mContext.getResources().getStringArray(R.array.question_text_list);//从本环境 的R文档里获得资源
-        String[] RadioQuestionArray = mContext.getResources().getStringArray(R.array.question_radio_list);//从本环境 的R文档里获得资源
-        String[] CheckQuestionArray = mContext.getResources().getStringArray(R.array.question_check_list);//从本环境 的R文档里获得资源
-        //先遍历textQuesion   获取问题入textQuestionArray
-        //生成文本问题列表
-        List<BaseTextQue> BaseTextQueList = new ArrayList<>();
-
-        for (String question : textQuestionArray) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
-            //一个问题对应生成一个对象 BaseTextQue
-            BaseTextQue baseTextQue = new BaseTextQue();
-
-            baseTextQue.setType(0);
-            baseTextQue.setTitle(question);//加入问题题目
-            BaseTextQueList.add(baseTextQue);//加入对象集合
-        }
-
-        return BaseTextQueList;
-    }
-
     public List<Content> getContent(String[] AnswerArray) {
         String[] textQuestionArray = mContext.getResources().getStringArray(R.array.question_text_list);//从本环境 的R文档里获得资源
         String[] RadioQuestionArray = mContext.getResources().getStringArray(R.array.question_radio_list);//从本环境 的R文档里获得资源
@@ -181,29 +193,62 @@ public class BaseQueManager {
         return contentList;
     }
 
+
+
+    //->返回问题对象列表
+    //
+    public List<BaseTextQue> getTextQueList() {
+        String[] textQuestionArray = mContext.getResources().getStringArray(R.array.question_text_list);//从本环境 的R文档里获得资源
+        String[] RadioQuestionArray = mContext.getResources().getStringArray(R.array.question_radio_list);//从本环境 的R文档里获得资源
+        String[] CheckQuestionArray = mContext.getResources().getStringArray(R.array.question_check_list);//从本环境 的R文档里获得资源
+        //先遍历textQuesion   获取问题入textQuestionArray
+        //生成文本问题列表
+        List<BaseTextQue> BaseTextQueList = new ArrayList<>();
+
+        for (String question : textQuestionArray) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
+            //一个问题对应生成一个对象 BaseTextQue
+            BaseTextQue baseTextQue = new BaseTextQue();
+
+            baseTextQue.setType(0);
+            baseTextQue.setTitle(question);//加入问题题目
+            BaseTextQueList.add(baseTextQue);//加入对象集合
+        }
+
+        return BaseTextQueList;
+    }
+
+    /**
+     * 一个多选问题绑定
+     * @param answeRresource
+     * @param baseCheckQue
+     */
+
+    public void CheckAnswerToQue(int answeRresource, BaseCheckQue baseCheckQue){
+
+    /*    String[] AnswerArray = mContext.getResources().getStringArray(answeRresource);//从本环境 的R文档里获得资源
+        List<Content> AnswerList = getContent(AnswerArray);//回答问题列表
+
+
+        for (Content content : AnswerList) {/*//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
+            //一个问题对应生成一个对象 BaseQue
+            content.setBaseCheckQue(baseCheckQue);//遍历radio问题数组
+
+
+        }
+        ContentDao contentDao = new ContentDao(mContext);//创建数据库操作对象-本环境下mContex 关联
+        if(contentDao.queryAll()==null){
+            contentDao.delelteAll();//删除数据库所有内容//
+            contentDao.insert(AnswerList);//将问题们添加进数据库表格里
+        }*/
+
+    }
+
     /**
      * 生成单选问题列表
      *
      * @return
      */
-    public List<BaseRadioQue> getRadioQueList() {
-        String[] radioQuestionArray = mContext.getResources().getStringArray(R.array.question_radio_list);//从本环境 的R文档里获得资源
-        String[] RadioAnswerArray = mContext.getResources().getStringArray(R.array.radio_exercise_answer1);//从本环境 的R文档里获得资源
-        //先遍历textQuesion   获取问题入textQuestionArray
-        //生成文本问题列表
-        List<BaseRadioQue> baseRadioQueList = new ArrayList<>();
-
-        for (String question : radioQuestionArray) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
-            //一个问题对应生成一个对象 BaseRadioQue
-            BaseRadioQue baseRadioQue = new BaseRadioQue();
-
-            //todo//耦合时setTYpe
-            baseRadioQue.setType(1);
-            baseRadioQue.setTitle(question);//加入问题题目
-            baseRadioQueList.add(baseRadioQue);//加入对象集合
-        }
-        return baseRadioQueList;
-    }
+   
         /**
          * 生成多选问题列表
          * @return
@@ -216,9 +261,9 @@ public class BaseQueManager {
             List<BaseCheckQue> baseCheckQueList = new ArrayList<>();
 
             for (String question : checkoQuestionArray) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
-                //一个问题对应生成一个对象 BaseRadioQue
+                //一个问题对应生成一个对象 BaseQue
                 BaseCheckQue baseCheckQue = new BaseCheckQue();
-                //todo//耦合时setTYpe
+
                 baseCheckQue.setType(2);
                 baseCheckQue.setTitle(question);//加入问题题目
                 baseCheckQueList.add(baseCheckQue);//加入对象集合

@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.example.hxx.tyear.diaryFragmentModel.ComDiaryFragment;
-import com.example.hxx.tyear.model.SubjectManager;
 import com.example.hxx.tyear.statisticsFragmentModel.ComStatisFragment;
 
 import java.util.ArrayList;
@@ -66,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        /**
+/*        *//**
          * 数据库问题表生成
-         */
-        SubjectManager subjectManager = new SubjectManager(MainActivity.this);
+         *//*
+        BaseQueManager subjectManager = new BaseQueManager(MainActivity.this);
         subjectManager.init();
-        //数据库之<问题>表生成
+        //数据库之<问题>表生成*/
     }
 
     /**

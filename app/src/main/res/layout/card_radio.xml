@@ -23,7 +23,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/radio_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -36,7 +36,7 @@
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textView4"
+                android:layout_below="@+id/radio_title"
                 android:padding="4dp">
 
                 <RadioButton
@@ -45,8 +45,11 @@
                     style="@style/button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="准点早起" />
+
+                    android:text="准点早起"
+                    android:checked="false"
+                    android:visibility="gone"
+                    />
 
                 <RadioButton
 
@@ -54,7 +57,8 @@
                     style="@style/button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
+                    android:checked="false"
+                    android:visibility="gone"
                     android:text="闹钟响了好几次呢" />
 
                 <RadioButton
@@ -63,8 +67,25 @@
                     style="@style/button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
+                    android:checked="false"
+                    android:visibility="gone"
                     android:text="睡懒觉，闹钟？不存在的" />
+                <RadioButton
+
+                    android:id="@+id/radioButton4"
+                    style="@style/button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:visibility="gone" />
+                <RadioButton
+
+                    android:id="@+id/radioButton5"
+                    style="@style/button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:visibility="gone" />
 
             </RadioGroup>
 

@@ -9,11 +9,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.hxx.tyear.R;
-import com.example.hxx.tyear.diaryFragmentModel.RadioItem;
-import com.example.hxx.tyear.diaryFragmentModel.RecycleViewItemData;
-import com.example.hxx.tyear.diaryFragmentModel.TextItem;
+import com.example.hxx.tyear.model.bean.BaseQue;
+import com.example.hxx.tyear.model.bean.Content;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by hxx on 2017/10/5.
@@ -23,13 +23,17 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int TYPE_TEXT = 0;//编辑框
     private static final int TYPE_RADIO = 1;//按钮
     private static final int TYPE_CHECK = 2;//下拉列表
-    private ArrayList<RecycleViewItemData> dataList;//数据集合
-
+   // private ArrayList<RecycleViewItemData> dataList;//数据集合
+   private List<BaseQue> dataList;//数据集合
+//todo//传入datalist? 不如直接用sql操作数据库
     /**
      * 数据源加载
      * @param dataList
      */
-    public QGridyAdapter(ArrayList<RecycleViewItemData> dataList) {
+/*    public QGridyAdapter(ArrayList<RecycleViewItemData> dataList) {
+        this.dataList = dataList;
+    }*/
+    public QGridyAdapter(List<BaseQue> dataList) {
         this.dataList = dataList;
     }
 
@@ -47,6 +51,7 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (viewType == TYPE_TEXT) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_text, parent, false);
             TextViewHolder viewHolder = new TextViewHolder(view);
+            //??动态添加布局
             return viewHolder;
         }
         //如果viewType是按钮类型,则创建RadioViewHolder型viewholder
@@ -73,9 +78,15 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         //如果holder是TextViewHolder的实例
         if (holder instanceof TextViewHolder) {
-            
-            TextItem mTextItem = (TextItem) dataList.get(position).getT();//从datalist获取一个TextItem实例 因为动态加载的数据 将从这个实例获得
-           
+            //获取问题
+            BaseQue textQue = (BaseQue) dataList.get(position);//从datalist获取一个TextItem实例 因为动态加载的数据 将从这个实例获得
+            ((TextViewHolder) holder).mTextTitle.setText(textQue.getTitle());
+            //获取回答内容
+            ArrayList<Content> contentlist = new ArrayList<>();
+            contentlist = textQue.getContent();
+            if(contentlist.size()!=0)//若存储 则默认
+            ((TextViewHolder) holder).mTextContent.setText(contentlist.get(0).getName());//text回答列表中只有一个
+            //todo//标签添加
             //xxx.setText-动态改控件 ！！！因为同一个xml要装不同数据
             //position==xxxx-不同textItem的放置位置
             
@@ -99,7 +110,23 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         //如果holder是RadioViewHolder的实例
         if (holder instanceof RadioViewHolder) {
             //从数据集合中取出该项
-            RadioItem mRadioItem = (RadioItem) dataList.get(position).getT();
+            //获取问题
+            BaseQue radioQue = (BaseQue) dataList.get(position);//从datalist获取一个TextItem实例 因为动态加载的数据 将从这个实例获得
+
+            ((RadioViewHolder) holder).mRadioTitle.setText(radioQue.getTitle());
+
+            //获取回答内容
+            ArrayList<Content> Contentlist = new ArrayList<>();
+            Contentlist = radioQue.getContent();
+            int i=0;
+            for(Content radioContent:Contentlist){//根据数据库回答表，该问题有多少个回答就显示多少个
+                ((RadioViewHolder) holder).buttonList.get(i).setVisibility(View.VISIBLE);
+                ((RadioViewHolder) holder).buttonList.get(i).setText(radioContent.getName());
+                ((RadioViewHolder) holder).buttonList.get(i).setChecked(radioContent.isChecked());
+                i++;
+            }
+          //  RadioButton radioButton = new RadioButton();
+
             //设置选中的按钮-根据数据Position动态选中 
           /*  switch (mRadioItem.getPosition()) {
                 case 0:
@@ -116,6 +143,21 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
         //如果holder是CheckHolder的实例
         if (holder instanceof CheckHolder) {
+            //获取问题
+            BaseQue checkQue = (BaseQue) dataList.get(position);//从datalist获取一个TextItem实例 因为动态加载的数据 将从这个实例获得
+
+            ((CheckHolder) holder).mCheckTitle.setText(checkQue.getTitle());
+
+            //获取回答内容
+            ArrayList<Content> Contentlist = new ArrayList<>();
+            Contentlist = checkQue.getContent();//
+            int i=0;
+            for(Content radioContent:Contentlist){//根据数据库回答表，该问题有多少个回答就显示多少个
+                ((CheckHolder) holder).buttonList.get(i).setVisibility(View.VISIBLE);
+                ((CheckHolder) holder).buttonList.get(i).setText(radioContent.getName());
+                ((CheckHolder) holder).buttonList.get(i).setChecked(radioContent.isChecked());//todo//存储
+                i++;
+            }
         }
 
         //长短按 监听事件
@@ -156,11 +198,11 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public int getItemViewType(int position) {//？？？
 
-        if (0 == dataList.get(position).getDataType()) {
+        if (0 == dataList.get(position).getType()) {
             return TYPE_TEXT;// 编辑框
-        } else if (1 == dataList.get(position).getDataType()) {
+        } else if (1 == dataList.get(position).getType()) {
             return TYPE_RADIO;// 按钮
-        } else if (2 == dataList.get(position).getDataType()) {
+        } else if (2 == dataList.get(position).getType()) {
             return TYPE_CHECK;//下拉列表
         } else {
             return 0;
@@ -205,6 +247,7 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public TextViewHolder(View itemView) {
             super(itemView);
             mTextTitle = (TextView) itemView.findViewById(R.id.text_title);
+
             mTextContent = (TextView) itemView.findViewById(R.id.text_content);
         }
     }
@@ -213,25 +256,57 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public RadioButton mRadioButton;
         public RadioButton mRadioButton2;
         public RadioButton mRadioButton3;
+        public RadioButton mRadioButton4;
+        public RadioButton mRadioButton5;
+        public TextView mRadioTitle;
+        public  ArrayList<RadioButton> buttonList;
 
         public RadioViewHolder(View itemView) {
             super(itemView);
+            mRadioTitle = (TextView) itemView.findViewById(R.id.radio_title);
+
             mRadioButton = (RadioButton) itemView.findViewById(R.id.radioButton1);
             mRadioButton2 = (RadioButton) itemView.findViewById(R.id.radioButton2);
             mRadioButton3 = (RadioButton) itemView.findViewById(R.id.radioButton3);
+            mRadioButton4= (RadioButton) itemView.findViewById(R.id.radioButton4);
+            mRadioButton5 = (RadioButton) itemView.findViewById(R.id.radioButton5);
+
+             buttonList = new ArrayList<>();
+            buttonList.add(mRadioButton);
+            buttonList.add(mRadioButton2);
+            buttonList.add(mRadioButton3);
+            buttonList.add(mRadioButton4); 
+            buttonList.add(mRadioButton5);
         }
     }
 
     public class CheckHolder extends RecyclerView.ViewHolder {
+        public TextView mCheckTitle;
         public CheckBox mCheckBox;
         public CheckBox mCheckBox2;
         public CheckBox mCheckBox3;
+        public CheckBox mCheckBox4;
+        public CheckBox mCheckBox5;
+        public  ArrayList<CheckBox> buttonList;
         public CheckHolder(View itemView) {
             
             super(itemView);
+            mCheckTitle = (TextView) itemView.findViewById(R.id.textView4);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.checkBox1);
             mCheckBox2 = (CheckBox) itemView.findViewById(R.id.checkBox2);
             mCheckBox3 = (CheckBox) itemView.findViewById(R.id.checkBox3);
+            mCheckBox4 = (CheckBox) itemView.findViewById(R.id.checkBox4);
+            mCheckBox5 = (CheckBox) itemView.findViewById(R.id.checkBox5);
+
+            buttonList = new ArrayList<>();
+            buttonList.add(mCheckBox);
+            buttonList.add(mCheckBox2);
+            buttonList.add(mCheckBox3);
+            buttonList.add(mCheckBox4);
+            buttonList.add(mCheckBox5);
+            
         }
+   
     }
+    
 }

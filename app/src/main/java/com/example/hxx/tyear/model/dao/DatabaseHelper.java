@@ -3,7 +3,8 @@ package com.example.hxx.tyear.model.dao;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.hxx.tyear.model.bean.BaseRadioQue;
+import com.example.hxx.tyear.model.bean.BaseQue;
+import com.example.hxx.tyear.model.bean.Content;
 import com.example.hxx.tyear.model.bean.Diary;
 import com.example.hxx.tyear.model.bean.Label;
 import com.example.hxx.tyear.model.bean.SpecialQue;
@@ -23,7 +24,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 //用于创建数据库，此实例只用搞一个
 
     public static final String DB_NAME = "grid_diary.db";
-    public static final int DB_VERSION = 10;
+    public static final int DB_VERSION = 13;
     private static DatabaseHelper mInstance;
     private Map<String, Dao> mDaoMaps = new HashMap<>();
 
@@ -59,10 +60,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             //数据库里创建表
 
             TableUtils.createTable(connectionSource, Diary.class);
-            TableUtils.createTable(connectionSource, BaseRadioQue.class);
+            TableUtils.createTable(connectionSource, BaseQue.class);
             TableUtils.createTable(connectionSource, SpecialQue.class);
             TableUtils.createTable(connectionSource, Label.class);
-
+            TableUtils.createTable(connectionSource, Content.class);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -78,9 +79,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
           //删除表
 
             TableUtils.dropTable(connectionSource, Diary.class,true);
-            TableUtils.dropTable(connectionSource, BaseRadioQue.class,true);
+            TableUtils.dropTable(connectionSource, BaseQue.class,true);
             TableUtils.dropTable(connectionSource, SpecialQue.class,true);
             TableUtils.dropTable(connectionSource, Label.class,true);
+            TableUtils.dropTable(connectionSource, Content.class,true);
+
             onCreate(sqLiteDatabase, connectionSource);
         } catch (SQLException e) {
             e.printStackTrace();

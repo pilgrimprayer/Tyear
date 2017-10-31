@@ -43,7 +43,7 @@ public class DaoImpl<T> implements IDao<T> {
 
         try {
             for (T t : list) {
-                mDao.create(t);
+                mDao.createIfNotExists(t);
             }
         } catch (SQLException e) {
             e.printStackTrace();
