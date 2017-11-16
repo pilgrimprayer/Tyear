@@ -8,8 +8,10 @@ import com.example.hxx.tyear.model.bean.BaseCheckQue;
 import com.example.hxx.tyear.model.bean.BaseQue;
 import com.example.hxx.tyear.model.bean.BaseTextQue;
 import com.example.hxx.tyear.model.bean.Content;
+import com.example.hxx.tyear.model.bean.Diary;
 import com.example.hxx.tyear.model.dao.BaseQueDao;
 import com.example.hxx.tyear.model.dao.ContentDao;
+import com.example.hxx.tyear.model.dao.DiaryDao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,7 @@ public class BaseQueManager {
         BaseQueDao baseQueDao = new BaseQueDao(mContext);//创建数据库操作对象-本环境下mContex 关联
     // if(baseQueDao.queryAll()==null){
 
- baseQueDao.delelteAll();//删除数据库所有内容*/
+ //baseQueDao.delelteAll();//删除数据库所有内容*/
         //todo//每次都添加？？
 
 
@@ -49,7 +51,10 @@ public class BaseQueManager {
         List<BaseQue> list = baseQueDao.queryAll();
 
        Log.i("Test", "diary:" + list.toString());
+        DiaryDao mDiaryDao=new DiaryDao(mContext);
+        List<Diary> listd = mDiaryDao.queryAll();
 
+        Log.i("Test", "diary:" + listd.toString());
 
 /**
  * 所有单选问题绑定
@@ -70,7 +75,7 @@ public class BaseQueManager {
         };
         String[] AnswerArray;
         ContentDao contentDao = new ContentDao(mContext);//创建数据库操作对象-本环境下mContex 关联
-        contentDao.delelteAll();//删除数据库所有内容
+   //     contentDao.delelteAll();//删除数据库所有内容
         //todo//每次都添加？
         int i=0,j=0;
         for (BaseQue baseQue : baseQueList) {//**for(String s:v)s是遍历后赋值的变量，v是要遍历的list。
@@ -109,7 +114,7 @@ public class BaseQueManager {
                     //一个问题对应生成一个对象 BaseQue
                     content.setBaseQue(baseQue);//遍历radio问题数组
 
-                }
+               }
 
                 //  contentDao.delelteAll();//删除数据库所有内容
                 contentDao.insert(AnswerList);//将问题们添加进数据库表格里
@@ -168,7 +173,7 @@ public class BaseQueManager {
         }
 
         ContentDao contentDao = new ContentDao(mContext);//创建数据库操作对象-本环境下mContex 关联
-        contentDao.delelteAll();//删除数据库所有内容
+      //  contentDao.delelteAll();//删除数据库所有内容
         contentDao.insert(AnswerList);//将问题们添加进数据库表格里
     }
     public List<Content> getContent(String[] AnswerArray) {

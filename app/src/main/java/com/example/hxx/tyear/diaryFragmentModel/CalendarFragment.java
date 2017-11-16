@@ -37,7 +37,10 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 /**
@@ -56,7 +59,8 @@ public class CalendarFragment extends Fragment {
     private Diary mDiary;
     private BaseQueDao baseQueDao;
     private BaseQue mBaseQue;
-    private List<BaseQue> mBaseQueList;
+   // ContentDao  contentDao;
+    private List<BaseQue> mBaseQueList=new ArrayList<>();
     private  List<BaseQue> initBaseQueList;
 
     private  MaterialCalendarView calendarView;
@@ -80,7 +84,7 @@ public class CalendarFragment extends Fragment {
 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        baseQueDao=new BaseQueDao(getActivity());
        mDiaryCardList=(RecyclerView)getActivity().findViewById(R.id.diary_card_list);
         mDiaryCardList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
@@ -92,18 +96,13 @@ public class CalendarFragment extends Fragment {
 
 
         BaseQueManager baseQueManager = new BaseQueManager(getActivity());
+//        if(baseQueDao.queryAll()==null)
         baseQueManager.init();
 
         /**
          * 数据源加载-默认为今天
          */
 
- /*       if (calendarDay != null) {//若有==从日历除今天外日期跳转
-            mDate = calendarDay.getDate();//通过calenderday获取mdate
-        } else {//都没有==新的一篇日记==本界面！！！一个新的对象==表里一条新纪录
-            mDate = new Date(System.currentTimeMillis());//获取当前时间
-
-        }*/
 
         mDate = new Date(System.currentTimeMillis());//获取当前时间
 
@@ -119,23 +118,55 @@ public class CalendarFragment extends Fragment {
                 isNewDay=true;
             }
 
-            //todo//加载场景1 新日记 加载场景2 已有日记
             //sart----获取基本问题列表
         List<BaseQue> tBaseQueList= baseQueDao.queryAll();
       initBaseQueList= new ArrayList<>();
         for(int i=0;i<10;i++){
             initBaseQueList.add(tBaseQueList.get(i));
         }
-        //todo//???重启一次 数据库都清零了
-            mBaseQueList = mDiary.getBaseQues();//创建问题表数据源。此时mBaseQueList无
-            //if mBaseQueList为空说明为新日记，则数据源为默认值
-            if(mBaseQueList.size()==0){
-               baseQueDao = new BaseQueDao(getActivity());
-                mBaseQueList =  initBaseQueList;//查询表中所有的记录：问题
-                //todo// 需要在新日记显示的记录 不等于问题表所有记录 。应等于 前一天的记录
-            }
-            //end----queList
+        mBaseQueList=mDiary.getBaseQues();
 
+
+        // 1110舍弃mBaseQueList = mDiary.getBaseQues();//创建问题表数据源。此时mBaseQueList无//直接指针指向数据表
+            //if mBaseQueList为空说明为新日记，则数据源为前一天
+            if(mBaseQueList.size()==0) {
+                Calendar calendar = new GregorianCalendar();
+                calendar.setTime(mDate);
+                calendar.add(calendar.DATE, -1);//把日期往后增加一天.整数往后推,负数往前移动
+                Date date = calendar.getTime();   //这个时间就是日期往后推一天的结果
+
+                String oDiaryDate = DateUtils.formatDate(date);//转化为string类型
+                Diary oDiary = mDiaryDao.query(oDiaryDate);//根据时间来查询今天的日记
+
+                //todo// 需要在新日记显示的记录 不等于问题表所有记录 。应等于 前一天的记录
+                if (oDiary != null) {
+                    for (BaseQue addQue : oDiary.getBaseQues())//从前天日记获取问题数据，放入mBaseQueList筐
+                    {
+                        BaseQue newBaseQue = new BaseQue();
+                        newBaseQue.setType(addQue.getType());
+                        newBaseQue.setTitle(addQue.getTitle());
+                        // 绑定答案
+                        List<Content> newContentList = new ArrayList<>();
+                        for (Content content : addQue.getContent()) {//遍历所有回答选项
+                            //一个问题对应生成一个对象 BaseQue
+                            Content newContent = new Content();
+                            newContent.setName(content.getName());
+                            //newContent.setIsChecked(content.isChecked());//
+                            newContent.setBaseQue(newBaseQue);
+                            newContentList.add(newContent);
+                        }
+                        mBaseQueList.add(newBaseQue);
+                    }
+                }
+              if(mBaseQueList.size()==0){//如果前一天也没有==从原始数据获取
+
+                    mBaseQueList=initBaseQueList;
+
+
+                }
+
+
+            }
 
 
 
@@ -144,16 +175,20 @@ public class CalendarFragment extends Fragment {
         /**
          * 适配器加载
          */
-
-                mAdapter = new QGridyAdapter(mBaseQueList);
-       // mAdapter = new QGridyAdapter(dataList);
-        //长按事件
-        mAdapter.setOnItemClickListener(new QGridyAdapter.OnItemClickListener() {
+         final Map<Integer, String> map = new HashMap<Integer, String>();
+        Content checkContent[][];
+        final List<Map> saveCheck = new ArrayList<>();
+        mAdapter = new QGridyAdapter(mBaseQueList,getActivity(),map,saveCheck);
+//监听输入文本
+        mAdapter.setSaveEditListenerr(new QGridyAdapter.SaveEditListener() {
             @Override
-            public void onItemClick(View view, int position) {
-                Toast.makeText(getActivity(), "click " + mBaseQueList.get(position), Toast.LENGTH_SHORT).show();
+            public void SaveEdit(int position, String string) {
+                Toast.makeText(getActivity(), "填写内容 " +string+ position, Toast.LENGTH_SHORT).show();
+
+                map.put(position,string);
             }
         });
+
         mAdapter.setOnItemLongClickListener(new QGridyAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, int position) {
@@ -173,42 +208,100 @@ public class CalendarFragment extends Fragment {
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-               //start---跳转前 存入数据库
-                //todo//永远是表中前1-10个问题存入
-                //新日记
-                if(isNewDay) {
+                //start---跳转前 存入数据库
+            //todo//bug1 修改旧日记无效 bug2 第二篇日记没有存成功 二次点击无效
+
+                List<BaseQue> testBaseQueList = new ArrayList<BaseQue>();
+                if (isNewDay) {
+                    mDiaryDao.insert(mDiary);
                     List<BaseQue> newBaseQueList = new ArrayList<>();
+                    int num = 0, k = 0, checkSize;
+                    checkSize = saveCheck.size();
                     for (BaseQue addQue : mBaseQueList) {//mBaseQueList 为点击日历已有-当天问题 未有-初始化问题
                         //   点击日历-指向那一天的问题 已有-那一天问题 未有-初始化问题
                         BaseQue newBaseQue = new BaseQue();
                         newBaseQue.setType(addQue.getType());
                         newBaseQue.setTitle(addQue.getTitle());
-                        // 绑定答案
+                        newBaseQue.setDiary(mDiary);
+                        baseQueDao.insert(newBaseQue);//先放入数据库 这样答案才能绑定上问题
+                        // 答案绑定问题
+
                         List<Content> newContentList = new ArrayList<>();
-                        for (Content content : addQue.getContent()) {//遍历所有回答选项
-                            //一个问题对应生成一个对象 BaseQue
-                            Content newContent = new Content();
-                            newContent.setName(content.getName());
-                            newContent.setIsChecked(content.isChecked());//todo//不同日记不同保存
-                            newContent.setBaseQue(newBaseQue);
-                            newContentList.add(newContent);
+                        if (addQue.getType() == 0)//text类型
+                        {
+
+                            // String key=String.valueOf(num);
+                            if (map.containsKey(num)) {//若已输入 更新内容 list与map位置一一对应
+                                //for (Content content : addQue.getContent()) {//遍历所有回答选项//text只有一个
+                                //一个问题对应生成一个对象 BaseQue
+                                Content newContent = new Content();
+                                newContent.setName((String) map.get(num));
+                                // newContent.setIsChecked(content.isChecked());//todo//不同日记不同保存
+                                newContent.setBaseQue(newBaseQue);//绑定问题
+                                newContentList.add(newContent);//增加数据库新数据
+                            }
+                        }
+                        if (addQue.getType() == 1) {//单选问题 -每一个回答都得加上 只需标记已选的即可
+                            for (Content content : addQue.getContent()) {//遍历所有回答选项//text只有一个
+                                //一个问题对应生成一个对象 BaseQue
+                                Content newContent = new Content();
+                                // newContent.setName(content.getName());
+                                newContent.setName(content.getName());
+
+                                if (map.containsKey(num) && content.getName().equals(map.get(num))) {
+                                    newContent.setIsChecked(true);//
+                                }
+
+
+                                newContent.setBaseQue(newBaseQue);
+                                newContentList.add(newContent);
+                            }
+                        }
+
+                        if (addQue.getType() == 2) {//多选问题 -每一个回答都得加上 遍历checkmap 标记多个
+                            Map checkMap = null;
+                            if (checkSize > 0) {
+                                checkMap = saveCheck.get(k++);
+                                checkSize--;
+                            }
+                            for (int i = 0; i < addQue.getContent().size(); i++) {//遍历所有回答选项//text只有一个
+                                //一个问题对应生成一个对象 BaseQue
+                                //Content content : addQue.getContent()
+                                Content content = addQue.getContent().get(i);
+                                // newContent.setName(content.getName());
+                                Content newContent = new Content();
+
+                                newContent.setName(content.getName());
+
+
+                                if (checkMap != null && checkMap.containsKey(i) && content.getName().equals(checkMap.get(i))) {
+                                    newContent.setIsChecked(true);//
+                                }
+
+                                newContent.setBaseQue(newBaseQue);
+                                newContentList.add(newContent);
+                            }
                         }
                         ContentDao contentDao = new ContentDao(getActivity());
                         contentDao.insert(newContentList);//将问题们添加进数据库表格里
                         //end----答案绑定
-                        newBaseQue.setDiary(mDiary);
 
-                        newBaseQueList.add(newBaseQue);
 
-              /*      addQue.setDiary(mDiary);//与当天日记绑定 基本问题
-                    baseQueDao.update(addQue);*/
+                        //newBaseQueList.add(newBaseQue);
+
+                        num++;
                     }
 
-                    baseQueDao.insert(newBaseQueList);
+//                    baseQueDao.insert(newBaseQueList);
 
-                    mDiaryDao.insert(mDiary);
-                }
-                else {//已有 更新操作  //todo//答案设置
+                    ContentDao contentDao = new ContentDao(getActivity());
+                    List<Content> t2list = contentDao.queryAll();
+
+                    Log.i("Test", "diary:" + t2list.toString());//只能看到content对应的Qid但title什么的都没
+                    mDiary = mDiaryDao.query(mDiaryDate);//根据时间来查询今天的日记//看到Q Q对应的content
+                    mBaseQueList = mDiary.getBaseQues();
+
+                } else {//已有 更新操作  //
                     for (BaseQue addQue : mBaseQueList) {
                         // addQue.setDiary(mDiary);//与当天日记绑定 基本问题
                         baseQueDao.update(addQue);
@@ -216,14 +309,12 @@ public class CalendarFragment extends Fragment {
 
                     mDiaryDao.update(mDiary);
                 }
-                List<BaseQue> mmlist = baseQueDao.queryAll();
 
-                Log.i("Test", "diary:" + mmlist.toString());
-             // List<BaseQue>  testeList ;
-             //   testeList = mDiary.getBaseQues();//创建问题表数据源。此时mBaseQueList无
+                // List<BaseQue>  testeList ;
+                //   testeList = mDiary.getBaseQues();//创建问题表数据源。此时mBaseQueList无
 
                 //mDiaryDao.insert(mDiary);
-                List<Diary> mlist = mDiaryDao.queryAll();
+                List<Diary> mlist = mDiaryDao.queryAll();///diary 没有显示绑定的que
 
                 Log.i("Test", "diary:" + mlist.toString());
                 //end-----------存入数据库
@@ -233,40 +324,140 @@ public class CalendarFragment extends Fragment {
               intent.putExtra(KeyConfig.CALENDAR_DAY, date);
                 startActivity(intent);*/
 //start-----------展示
-            //不如直接搜索数据库刷新
+                //不如直接搜索数据库刷新
                 mDiaryDate = DateUtils.formatDate(date.getDate());//转化为string类型
 
                 // 判断是否为新日记,应用场景：客户在一天内重启程序多次
                 mDiaryDao = new DiaryDao(getActivity());//日记操作对象-Diary
                 mDiary = mDiaryDao.query(mDiaryDate);//根据时间来查询今天的日记
                 if (mDiary == null) //若未找到此条记录==当前是新的日记
-                    {
-                        isNewDay=true;
-                        mDiary = new Diary();//创建新日记
-                        mDiary.setDate(mDiaryDate);//添加日期字段信息
+                {
+                    isNewDay = true;
+                    mDiary = new Diary();//创建新日记
+                    mDiary.setDate(mDiaryDate);//添加日期字段信息
 
-                    }
-                    else{
-                    isNewDay=false;
+                } else {
+                    isNewDay = false;
                 }
-                    //todo//加载场景1 新日记 加载场景2 已有日记
+
+                //List<BaseQue> tmBaseQueList = new ArrayList<BaseQue>();
+                testBaseQueList= mDiary.getBaseQues();
+              //  mBaseQueList = mDiary.getBaseQues();//创建问题表数据源。此时mBaseQueList无
+                //if mBaseQueList为空说明为新日记，则数据源为默认值
+                //if mBaseQueList为空说明为新日记，则数据源为前一天
+                if (testBaseQueList.size() == 0) {
+                    Calendar calendar = new GregorianCalendar();
+                    calendar.setTime(date.getDate());
+                    calendar.add(calendar.DATE, -1);//把日期往后增加一天.整数往后推,负数往前移动
+                    Date ndate = calendar.getTime();   //这个时间就是日期往后推一天的结果
+
+                    String oDiaryDate = DateUtils.formatDate(ndate);//转化为string类型
+                    Diary oDiary = mDiaryDao.query(oDiaryDate);//根据时间来查询今天的日记
+
+                    //todo//心日记应等于最近最新的一天 而不仅仅是前一天 修正sql语句！！ 所以除了第一次打开用原始数据外 其他都是最新数据
+                    if (oDiary != null) {//前一天存在
+                        mDiaryDao.insert(mDiary);
+
+//                        mBaseQueList=oDiary.getBaseQues();
+//                        for(BaseQue addQue :mBaseQueList){
+//
+//                            for (Content content : addQue.getContent()) {//遍历所有回答选项
+//                                if(addQue.getType()==0){//文本类型 初始化内容无
+//                                    content.setName("请输入");
+//                                }
+//                                else {//其他类型 即选项初始化为未选
+//                                    content.setIsChecked(false);
+//                                }
+//
+//                            }
+//                        }
+//                        for (BaseQue addQue : oDiary.getBaseQues())//从前天日记获取问题数据，放入mBaseQueList筐
+//                        {
+//                            BaseQue newBaseQue = new BaseQue();
+//                            newBaseQue.setType(addQue.getType());
+//                            newBaseQue.setTitle(addQue.getTitle());
+//                            // 绑定答案
+//                            List<Content> newContentList = new ArrayList<>();
+//                            if(addQue.getType()!=0) {
+//                                for (Content content : addQue.getContent()) {//遍历所有回答选项
+//                                    //一个问题对应生成一个对象 BaseQue
+//                                    Content newContent = new Content();
+//                                    newContent.setName(content.getName());
+//                                    //newContent.setIsChecked(content.isChecked());//todo//不同日记不同保存
+//                                    newContent.setBaseQue(newBaseQue);
+//                                    newContentList.add(newContent);
+//                                }
+//                            }
+//                            mBaseQueList.add(newBaseQue);
+//                        }
+//                    }
+
+                        for (BaseQue addQue : oDiary.getBaseQues()) {//mBaseQueList 为点击日历已有-当天问题 未有-初始化问题
+                            //   点击日历-指向那一天的问题 已有-那一天问题 未有-初始化问题
+                            BaseQue newBaseQue = new BaseQue();
+                            newBaseQue.setType(addQue.getType());
+                            newBaseQue.setTitle(addQue.getTitle());
+                            newBaseQue.setDiary(mDiary);
+                            baseQueDao.insert(newBaseQue);//先放入数据库 这样答案才能绑定上问题
+                            // 答案绑定问题
+
+                            List<Content> newContentList = new ArrayList<>();
+                            if (addQue.getType() == 0)//text类型
+                            {
+
+                                Content newContent = new Content();
+                                newContent.setName(null);
+                                // newContent.setIsChecked(content.isChecked());
+                                newContent.setBaseQue(newBaseQue);//绑定问题
+                                newContentList.add(newContent);//增加数据库新数据
+
+                            }
+                            if (addQue.getType() != 0) {//单选问题 -每一个回答都得加上 只需标记已选的即可
+                                for (Content content : addQue.getContent()) {//遍历所有回答选项//text只有一个
+                                    //一个问题对应生成一个对象 BaseQue
+                                    Content newContent = new Content();
+                                    // newContent.setName(content.getName());
+                                    newContent.setName(content.getName());
+                                    newContent.setIsChecked(false);
+
+                                    newContent.setBaseQue(newBaseQue);
+                                    newContentList.add(newContent);
+                                }
+                            }
 
 
+                            ContentDao contentDao = new ContentDao(getActivity());
+                            contentDao.insert(newContentList);//将问题们添加进数据库表格里
+                            //end----答案绑定
 
-                    mBaseQueList = mDiary.getBaseQues();//创建问题表数据源。此时mBaseQueList无
-                    //if mBaseQueList为空说明为新日记，则数据源为默认值
-                    if (mBaseQueList.size() == 0) {
-                        //todo//应该查询前10个问题或者是查询无归属日记的问题
-                        //
-                        mBaseQueList = initBaseQueList;
-                      // mBaseQueList = baseQueDao.queryAll();//查询表中所有的记录：问题
-                        //todo// 需要在新日记显示的记录 不等于问题表所有记录 。应等于 前一天的记录
+                        }
+                        mDiary = mDiaryDao.query(oDiaryDate);//根据时间来查询今天的日记//看到Q Q对应的content
+                      //  mBaseQueList = mDiary.getBaseQues();
+
+                        testBaseQueList = mDiary.getBaseQues();
+                        if (mBaseQueList.size() == 0) {//如果前一天也没有==从原始数据获取
+                            testBaseQueList = initBaseQueList;
+
+
+                        }
+
+
                     }
-               // mBaseQueList.add(bas)
+
+
+
+
+                }
+            //    mAdapter = new QGridyAdapter(mBaseQueList,getActivity(),map,saveCheck);
+                int sum=mAdapter.getItemCount();
+                for(int i=0;i<sum;i++) {
+                    mBaseQueList.remove(0);
+                }
+                for(BaseQue nque:testBaseQueList){
+                    mBaseQueList.add(nque);
+                }
                 mAdapter.notifyDataSetChanged();
                 mDiaryCardList.scrollToPosition(1);
-
-
             }
         });
 
@@ -289,11 +480,12 @@ public class CalendarFragment extends Fragment {
                 switch (item.getItemId()){
                     case R.id.removeItem:
                         Toast.makeText(getActivity(),"remove",Toast.LENGTH_SHORT).show();
-                        mAdapter.removeItem(pos);
-                        BaseQueDao baseQueDao = new BaseQueDao(getActivity());//创建数据库操作对象-本环境下mContex 关联
+                       //mBaseQueList.remove(pos);
+               /*         BaseQueDao baseQueDao = new BaseQueDao(getActivity());//创建数据库操作对象-本环境下mContex 关联
                         mBaseQueList.get(pos).setDelete(true);
-                        baseQueDao.update(mBaseQueList.get(pos));//更新数据库
-
+                        baseQueDao.update(mBaseQueList.get(pos));//更新数据库*/
+                        mAdapter.removeItem(pos);//但是没有效果
+                        mAdapter.notifyDataSetChanged();
                         break;
                     case R.id.editItem:
                         Toast.makeText(getActivity(),"edit",Toast.LENGTH_SHORT).show();
@@ -312,6 +504,9 @@ public class CalendarFragment extends Fragment {
         });
         popupMenu.show();
     }
+
+
+
     /**
      * Simulate an API call to show how to add decorators
      */
@@ -319,7 +514,7 @@ public class CalendarFragment extends Fragment {
 /*
         @Override
         protected List<CalendarDay> doInBackground(@NonNull Void... voids) {
-            //TODO//bug:点击其他月份的日期后又跳回原来月份的日历界面
+            //TODO//bug:点击其他月份的日期后又跳回原来月份的日历界面 因为是intent跳转
             //已写过日记的加上标记
             ArrayList<CalendarDay> dates = new ArrayList<>();
             List<Diary> list = mDiaryDao.queryAll();

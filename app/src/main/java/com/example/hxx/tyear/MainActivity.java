@@ -72,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
         subjectManager.init();
         //数据库之<问题>表生成*/
     }
+//    @Override
+//    public void SaveEdit(int position, String string) {
+//        Toast.makeText( this,"click 回答问题了吧"+string + position, Toast.LENGTH_SHORT).show();//position从0开始传
+//    }
 
     /**
      * 模块fragment适配器

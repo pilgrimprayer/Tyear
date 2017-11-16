@@ -24,7 +24,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 //用于创建数据库，此实例只用搞一个
 
     public static final String DB_NAME = "grid_diary.db";
-    public static final int DB_VERSION = 13;
+    public static final int DB_VERSION = 20;
     private static DatabaseHelper mInstance;
     private Map<String, Dao> mDaoMaps = new HashMap<>();
 

@@ -57,7 +57,7 @@ public class Content extends BaseEntity{
     }
 
     public void setIsChecked(boolean checked) {
-        IsChecked = checked;
+       this. IsChecked = checked;
     }
 
     @Override
