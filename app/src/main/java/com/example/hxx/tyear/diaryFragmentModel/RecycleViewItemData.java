@@ -4,7 +4,7 @@ package com.example.hxx.tyear.diaryFragmentModel;
  * Created by hxx on 2017/10/5.
  */
 
-
+//1118不需要
 public class RecycleViewItemData<T> {
     //用来装载不同类型的item数据bean
     T t;

@@ -1,8 +1,6 @@
 package com.example.hxx.tyear.support;
 
-/**
- * Created by tangqi on 16/5/20.
- */
+
 public class KeyConfig {
 
     public static final String DIARY = "diary";

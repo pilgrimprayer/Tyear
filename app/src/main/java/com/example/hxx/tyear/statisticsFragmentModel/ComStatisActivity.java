@@ -33,7 +33,7 @@ public class ComStatisActivity  extends AppCompatActivity {
 
         layoutInflater = LayoutInflater.from(this);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.ucvp);
+        mViewPager = (ViewPager) findViewById(R.id.ucvp);//放入
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);

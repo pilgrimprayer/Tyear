@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import com.example.hxx.tyear.MineFragmentModel.ComMineFragment;
 import com.example.hxx.tyear.diaryFragmentModel.ComDiaryFragment;
 import com.example.hxx.tyear.statisticsFragmentModel.ComStatisFragment;
 
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         fraglist.add(new ComDiaryFragment());
         fraglist.add(new ComStatisFragment());
-
+        fraglist.add(new ComMineFragment());
 
         mModeladapter=new ModelPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mModeladapter);

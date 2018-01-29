@@ -19,7 +19,7 @@ import java.util.ArrayList;
 /**
  * Created by hxx on 2017/10/5.
  */
-
+//问题列表布局-不需要 已在calanderfragment一起编写
 public class CardListFragment extends Fragment {
     private ArrayList<RecycleViewItemData> dataList;
     RecyclerView mDiaryCardList;
@@ -43,12 +43,7 @@ public class CardListFragment extends Fragment {
         *//**
          * 数据源加载
          *//*
-        dataList=new ArrayList<RecycleViewItemData>();
-        dataList.add(new RecycleViewItemData(new TextItem( ),0));
-        dataList.add(new RecycleViewItemData(new RadioItem(1),1));
-        dataList.add(new RecycleViewItemData(new CheckItem( ),2));
-        dataList.add(new RecycleViewItemData(new CheckItem( ),2));
-        dataList.add(new RecycleViewItemData(new CheckItem( ),2));
+
 
         *//**
          * 适配器加载

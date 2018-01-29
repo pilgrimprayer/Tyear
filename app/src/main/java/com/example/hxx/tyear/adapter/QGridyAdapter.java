@@ -1,25 +1,27 @@
 package com.example.hxx.tyear.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.hxx.tyear.R;
 import com.example.hxx.tyear.model.bean.BaseQue;
 import com.example.hxx.tyear.model.bean.Content;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,9 +36,11 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
    // private ArrayList<RecycleViewItemData> dataList;//数据集合
    private List<BaseQue> dataList;//数据集合
     private Context mContext;
-    private Map map;
-    private  List<Map> saveCheck;
+    private Map<Integer, String> map;
+    private  List<Map<Integer, String>> saveCheck;
    int  countCheck=0;
+    public List<Boolean> changeLockList=new ArrayList<Boolean>();;//对旧日记改写时 锁起recyclerview根据位置自动更新子项目 因为若更新它会根据原数据源更新text 然后覆盖掉刚刚改写的内容
+    //更换日期解锁 点击输入锁起
 //todo//传入datalist? 不如直接用sql操作数据库
     /**
      * 数据源加载
@@ -45,11 +49,20 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 /*    public QGridyAdapter(ArrayList<RecycleViewItemData> dataList) {
         this.dataList = dataList;
     }*/
-    public QGridyAdapter(List<BaseQue> dataList,Context mContext, Map map, List<Map> saveCheck  ) {
+    public QGridyAdapter(List<BaseQue> dataList,Context mContext, Map<Integer, String> map, List<Map<Integer, String>> saveCheck  ) {
         this.mContext = mContext;
         this.dataList = dataList;
         this.map=map;
         this.saveCheck=saveCheck;
+        for(int i=0;i<dataList.size();i++){
+            changeLockList.add(true);
+        }
+        //test for 每日一问
+//        BaseQue baseQue=new BaseQue();
+//
+//            baseQue.setType(4);
+//            dataList.add(baseQue);
+
     }
 
     /**
@@ -81,6 +94,12 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             CheckHolder viewHolder = new CheckHolder(view);
             return viewHolder;
         }
+
+        if (viewType == 3) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_special, parent, false);
+            NewsViewHolder  viewHolder = new NewsViewHolder(view);
+            return viewHolder;
+        }
         return null;
     }
 
@@ -92,23 +111,29 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         //如果holder是TextViewHolder的实例
+
         if (holder instanceof TextViewHolder) {
             //获取问题
-            BaseQue textQue = (BaseQue) dataList.get(position);//从datalist获取一个TextItem实例 因为动态加载的数据 将从这个实例获得
+            BaseQue textQue=new BaseQue();
+
+            textQue = (BaseQue) dataList.get(position);
             ((TextViewHolder) holder).mTextTitle.setText(textQue.getTitle());
+            //标签
+            if(textQue.getLabel()!=null&&textQue.getLabel().size()!=0)
+            ((TextViewHolder) holder).label.setText(textQue.getLabel().get(0).getName());//todo//目前只用一个标签
             //获取回答内容
-            ArrayList<Content> contentlist = new ArrayList<>();
-            contentlist = textQue.getContent();
-            if(contentlist.size()!=0)//若存储 则默认
-            ((TextViewHolder) holder).mTextContent.setText(contentlist.get(0).getName());//text回答列表中只有一个
-            //todo//标签添加
-          //添加内容监听
-            ((TextViewHolder) holder).mTextContent.addTextChangedListener(new TextSwitcher((TextViewHolder) holder, this.mSaveEditListener));//设置监听 根据文本输入情况 用来调用被override的方法 SaveEdit
+    ;
 
            if(((TextViewHolder) holder).mTextContent.getTag()==null) {//todo//为了计算CheckBox的数量，可在数据库读取时就计算
                countCheck++;
+               ((TextViewHolder) holder).mTextContent.setTag(position);
+
            }
-            ((TextViewHolder) holder).mTextContent.setTag(position);//通过设置tag，防止position紊乱
+           ((TextViewHolder) holder).mTextContent.addTextChangedListener(new TextSwitcher((TextViewHolder) holder, this.mSaveEditListener,position));
+//           //通过设置tag，防止position紊乱
+            if(dataList.get(position).getContent().size()!=0)
+            ((TextViewHolder) holder).mTextContent.setText(dataList.get(position).getContent().get(0).getName());//todo//for演示
+          //  ((TextViewHolder) holder).mTextContent.setText(map.get(position));
         }
         //如果holder是RadioViewHolder的实例
         if (holder instanceof RadioViewHolder) {
@@ -120,18 +145,17 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             if(((RadioViewHolder) holder).mRadioTitle.getTag()==null) {//todo//为了计算CheckBox的数量，可在数据库读取时就计算
                 countCheck++;
+                for( RadioButton checkButton: ((RadioViewHolder) holder).buttonList){//控件标记 为了监听
+                    checkButton.setTag(position);
+                }
+                ((RadioViewHolder) holder).mRadioTitle.setTag(position);
             }
-            ((RadioViewHolder) holder).mRadioTitle.setTag(position);
+            //标签
+            ((RadioViewHolder) holder).label.setText( radioQue.getLabel().get(0).getName());
             //获取回答内容
             ArrayList<Content> Contentlist = new ArrayList<>();
             Contentlist = radioQue.getContent();
             int i=0;
-            for(Content radioContent:Contentlist){//根据数据库回答表，该问题有多少个回答就显示多少个
-                ((RadioViewHolder) holder).buttonList.get(i).setVisibility(View.VISIBLE);
-                ((RadioViewHolder) holder).buttonList.get(i).setText(radioContent.getName());
-                ((RadioViewHolder) holder).buttonList.get(i).setChecked(radioContent.isChecked());
-                i++;
-            }
 
             //设置监听
             ((RadioViewHolder) holder).radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -139,12 +163,11 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     // TODO Auto-generated method stub
                         int p=0;
-                    for( RadioButton checkButton: ((RadioViewHolder) holder).buttonList){//根据数据库回答表，该问题有多少个回答就显示多少个
-                        if( checkButton.getId() == checkedId){
-                            Toast.makeText(mContext, checkButton.getText(), Toast.LENGTH_SHORT).show();
-                           map.put(position, checkButton.getText());
-
-
+              changeLockList.set(position,false);
+                    for( RadioButton radioButton: ((RadioViewHolder) holder).buttonList){//根据数据库回答表，该问题有多少个回答就显示多少个
+                        if( radioButton.getId() == checkedId){//若遍历的button碰上了选择的名字
+                          //  Toast.makeText(mContext, radioButton.getText(), Toast.LENGTH_SHORT).show();
+                           map.put(position, (String) radioButton.getText());//更改名字
                             break;
                         }
                         p++;
@@ -152,9 +175,6 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     int j=0;//单选 则其他置未选
                     for( Content checkButton: dataList.get(position).getContent()){//根据数据库回答表，该问题有多少个回答就显示多少个
                         if( p!=j){
-                          //  Toast.makeText(mContext, checkButton.getText(), Toast.LENGTH_SHORT).show();
-                            // map.put(position, checkButton.getText());
-                            //dataList.get(position).getContent().get(j).setIsChecked(false);
 
                         }
                         j++;
@@ -163,6 +183,20 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                 }
             });
+            for(Content radioContent:Contentlist){//根据数据库回答表，该问题有多少个回答就显示多少个
+                ((RadioViewHolder) holder).buttonList.get(i).setVisibility(View.VISIBLE);
+                ((RadioViewHolder) holder).buttonList.get(i).setText(radioContent.getName());
+                //if(changeLockList.get(position))
+                    //todo//bug跳转后？ position==4和==5加载不到 崩溃 还是用intent吧虽然丑了点但是稳啊
+                if(map.get(position)!=null&&map.get(position).equals(radioContent.getName()))//若遍历的button碰上了map的名字
+                    ((RadioViewHolder) holder).buttonList.get(i).setChecked(true);//置true
+                else{
+                    ((RadioViewHolder) holder).buttonList.get(i).setChecked(false);
+                }
+//                ((RadioViewHolder) holder).buttonList.get(i).setChecked(radioContent.isChecked());
+                i++;
+            }
+
         }
         //如果holder是CheckHolder的实例
         if (holder instanceof CheckHolder) {
@@ -170,21 +204,36 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             BaseQue checkQue = (BaseQue) dataList.get(position);//从datalist获取一个TextItem实例 因为动态加载的数据 将从这个实例获得
 
             ((CheckHolder) holder).mCheckTitle.setText(checkQue.getTitle());
-
+            //标签
+            ((CheckHolder) holder).label.setText( checkQue.getLabel().get(0).getName());
             //获取回答内容
             ArrayList<Content> Contentlist = new ArrayList<>();
             Contentlist = checkQue.getContent();//
             int i=0;
             if(((CheckHolder) holder).mCheckTitle.getTag()==null) {
-                Map checkContent = new HashMap();
-                saveCheck.add(checkContent);//todo//bug会重新加载的
-
+//                Map checkContent = new HashMap();
+//                saveCheck.add(checkContent);//todo//bug会重新加载的
+                    for(CheckBox checkBox:((CheckHolder) holder).buttonList){
+                        checkBox.setTag(position);
+                    }
+                    ((CheckHolder) holder).mCheckTitle.setTag(position);
             }
-            ((CheckHolder) holder).mCheckTitle.setTag(position);
+            int p=0;
             for(Content radioContent:Contentlist){//根据数据库回答表，该问题有多少个回答就显示多少个
                 ((CheckHolder) holder).buttonList.get(i).setVisibility(View.VISIBLE);
                 ((CheckHolder) holder).buttonList.get(i).setText(radioContent.getName());
-                ((CheckHolder) holder).buttonList.get(i).setChecked(radioContent.isChecked());//todo//存储
+                //if(  changeLockList.get(position))
+
+          //      if(map.get(position).equals(radioContent.getName()))
+                  if( saveCheck.get(position- countCheck).get(p)!=null&& saveCheck.get(position- countCheck).get(p).equals(radioContent.getName())){
+                    ((CheckHolder) holder).buttonList.get(i).setChecked(true);
+                  }
+                else{
+                      ((CheckHolder) holder).buttonList.get(i).setChecked(false);
+                  }
+                  p++;
+                //((CheckH
+                //  older) holder).buttonList.get(i).setChecked(radioContent.isChecked());//todo//存储
                 //设置监听
                 //先设置容器map
 
@@ -193,21 +242,17 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     public void onCheckedChanged(CompoundButton buttonView,
                                                  boolean isChecked) {
                         // TODO Auto-generated method stub
+                       // changeLock=false;
                         int j=0;
+                        changeLockList.set(position,false);
+
                         for(  CheckBox checkButton: ((CheckHolder) holder).buttonList) {
                             if (isChecked&&buttonView.getId() == checkButton.getId()) {
-                                //editText1.setText(buttonView.getText()+"选中");
-                              //  Toast.makeText(mContext, checkBox.getText(), Toast.LENGTH_SHORT).show();
-                               // map.put(position, checkBox.getText());
-                                //dataList.get(position).getContent().get(j).setIsChecked(true);
-                               // map.put(position, buttonView.getText());
-                                saveCheck.get(position- countCheck).put(j, buttonView.getText());
+                                          saveCheck.get((Integer)checkButton.getTag()- countCheck).put(j, (String) buttonView.getText());
                             }
 
                             else if(!isChecked&&buttonView.getId() ==  checkButton.getId()){
-                              //  Toast.makeText(mContext, checkBox.getText()+"取消", Toast.LENGTH_SHORT).show();
-                                //dataList.get(position).getContent().get(j).setIsChecked(false);
-                                saveCheck.get(position- countCheck).remove(j);
+                                            saveCheck.get(position- countCheck).remove(j);
                             }
                             j++;
                         }
@@ -257,15 +302,20 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public int getItemViewType(int position) {//？？？
 
-        if (0 == dataList.get(position).getType()) {
+        if (0==dataList.get(position).getType()) {
+
             return TYPE_TEXT;// 编辑框
         } else if (1 == dataList.get(position).getType()) {
             return TYPE_RADIO;// 按钮
         } else if (2 == dataList.get(position).getType()) {
             return TYPE_CHECK;//下拉列表
-        } else {
+        } else if(4 == dataList.get(position).getType()){
+                return 3;
 
-
+           // return 0;
+        }
+        else{
+            int i=0;
             return 0;
         }
     }
@@ -287,9 +337,12 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         private TextViewHolder mHolder;
         SaveEditListener mSaveEditListener;
-        public TextSwitcher(TextViewHolder mHolder,SaveEditListener mSaveEditListener) {
+        int position;
+        public TextSwitcher(TextViewHolder mHolder,SaveEditListener mSaveEditListener,int position) {
             this.mHolder = mHolder;
             this.mSaveEditListener=mSaveEditListener;
+            this.position=position;
+
         }
 
         @Override
@@ -308,7 +361,10 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
           //  SaveEditListener listener= (SaveEditListener) mContext;//实例化接口
             SaveEditListener listener=  mSaveEditListener;
             if(s!=null){
-                listener.SaveEdit(Integer.parseInt(mHolder.mTextContent.getTag().toString()),s.toString());//传入位置tag,内容
+               // listener.SaveEdit(Integer.parseInt(mHolder.mTextContent.getTag().toString()),s.toString());//传入位置tag,内容
+             //   listener.SaveEdit(position,s.toString());
+                map.put(position,s.toString());
+            //todo//单选与多选若更换了选择/选从未选过的 或取消勾选则数据紊乱  bug发现率较低 很少有人对快速日记改了又改
             }
 
         }
@@ -340,16 +396,40 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         dataList.remove(pos);
         notifyItemRemoved(pos);
     }
+    static class NewsViewHolder extends RecyclerView.ViewHolder{
 
+        CardView cardView;
+        ImageView news_photo;
+        TextView news_title;
+        TextView news_desc;
+        Button share;
+        Button readMore;
+
+        public NewsViewHolder(final View itemView) {
+            super(itemView);
+            cardView= (CardView) itemView.findViewById(R.id.card_view);
+            news_photo= (ImageView) itemView.findViewById(R.id.news_photo);
+            news_title= (TextView) itemView.findViewById(R.id.news_title);
+            news_desc= (TextView) itemView.findViewById(R.id.news_desc);
+            share= (Button) itemView.findViewById(R.id.btn_share);
+            readMore= (Button) itemView.findViewById(R.id.btn_more);
+            //设置TextView背景为半透明
+            news_title.setBackgroundColor(Color.argb(20, 0, 0, 0));
+
+        }
+
+
+    }
     public class TextViewHolder extends RecyclerView.ViewHolder {
         public TextView mTextTitle;
         public TextView mTextContent;
-
+        public Button label;
         public TextViewHolder(View itemView) {
             super(itemView);
             mTextTitle = (TextView) itemView.findViewById(R.id.text_title);
-
+            label=(Button) itemView.findViewById(R.id.text_label);
             mTextContent = (TextView) itemView.findViewById(R.id.text_content);
+
         }
     }
 
@@ -362,12 +442,12 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public RadioButton mRadioButton5;
         public TextView mRadioTitle;
         public  ArrayList<RadioButton> buttonList;
-
+        public Button label;
         public RadioViewHolder(View itemView) {
             super(itemView);
             radioGroup = (RadioGroup)itemView. findViewById(R.id.radiogruop);
             mRadioTitle = (TextView) itemView.findViewById(R.id.radio_title);
-
+            label=(Button) itemView.findViewById(R.id.radio_label);
             mRadioButton = (RadioButton) itemView.findViewById(R.id.radioButton1);
             mRadioButton2 = (RadioButton) itemView.findViewById(R.id.radioButton2);
             mRadioButton3 = (RadioButton) itemView.findViewById(R.id.radioButton3);
@@ -390,11 +470,14 @@ public class QGridyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public CheckBox mCheckBox3;
         public CheckBox mCheckBox4;
         public CheckBox mCheckBox5;
+        public Button label;
         public  ArrayList<CheckBox> buttonList;
         public CheckHolder(View itemView) {
             
             super(itemView);
             mCheckTitle = (TextView) itemView.findViewById(R.id.textView4);
+            label=(Button) itemView.findViewById(R.id.check_label);
+
             mCheckBox = (CheckBox) itemView.findViewById(R.id.checkBox1);
             mCheckBox2 = (CheckBox) itemView.findViewById(R.id.checkBox2);
             mCheckBox3 = (CheckBox) itemView.findViewById(R.id.checkBox3);

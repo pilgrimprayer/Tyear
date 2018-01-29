@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tyear</string>
+    <string name="app_name">他年</string>
 
         <string name="title_diary">日记</string>
         <string name="title_stat">统计</string>
@@ -55,7 +55,12 @@
     <string name="question_item_cost"> 今天花钱合理了吗？</string>
     <string name="question_item_rest"> 今天作息正常吗？</string>
     <string name="question_item_rest"> 今天作息正常吗？</string>-->
-
+    <string-array name="report_question">
+        <item>对于现状，我能够掌握什么，我无力改变什么</item>
+        <item>下一个阶段有什么目标吗？？</item>
+        <item>想做的事情有去努力吗？</item>
+        <item>我想要成为一个什么样的人，我现在是什么样的人？</item>
+    </string-array>
     <string-array name="question_radio_list">
         <item>今天锻炼身体了吗</item>
         <item>今天花钱合理了吗？</item>
@@ -113,14 +118,14 @@
 
 
     <!--标签库-->
-    <string name="label_item_work"> 工作</string>
+    <string name="label_item_health"> 健康</string>
     <string name="label_item_learn"> 学习</string>
-    <string name="label_item_emotion"> 情感</string>
+    <string name="label_item_emotion"> 心情</string>
     <string name="label_item_rethink"> 反思</string>
 
 
     <string-array name="label_list">
-        <item>@string/label_item_work</item>
+        <item>@string/label_item_health</item>
         <item>@string/label_item_learn</item>
         <item>@string/label_item_emotion</item>
         <item>@string/label_item_rethink</item>

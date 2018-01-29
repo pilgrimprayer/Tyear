@@ -5,11 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <com.example.hxx.tyear.view.NoScrollViewPager
+        android:id="@+id/ucvp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-
 
 
         <android.support.v7.widget.Toolbar
@@ -28,16 +34,44 @@
 
 
                 <TextView
-                    android:id="@+id/titlename"
+                    android:id="@+id/dateend"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="日期选择"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="2017.11.20"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:layout_alignBottom="@+id/imageView2"
+                    android:layout_toRightOf="@+id/imageView2"
+                    android:layout_toEndOf="@+id/imageView2" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    app:srcCompat="@drawable/ic_compare_arrows_black_24dp" />
+
+                <TextView
+                    android:id="@+id/datestart"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2017.11.2s"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:layout_alignBottom="@+id/imageView2"
+                    android:layout_toLeftOf="@+id/imageView2"
+                    android:layout_toStartOf="@+id/imageView2"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginEnd="15dp" />
 
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
+
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
@@ -47,12 +81,4 @@
             />
 
     </android.support.design.widget.AppBarLayout>
-
-
-    <com.example.hxx.tyear.view.NoScrollViewPager
-        android:id="@+id/ucvp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </android.support.design.widget.CoordinatorLayout>

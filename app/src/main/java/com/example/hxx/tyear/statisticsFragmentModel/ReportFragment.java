@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.hxx.tyear.R;
 import com.example.hxx.tyear.adapter.ReportAdapter;
@@ -57,19 +56,21 @@ public class ReportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.diary_list, container, false);
+        View view = inflater.inflate(R.layout.diary_list_report, container, false);
 
 
 
-        mTableList=(RecyclerView)view.findViewById(R.id.diary_card_list);
+        mTableList=(RecyclerView)view.findViewById(R.id.diary_card_list_re);
         mTableList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         /**
          * 数据源加载
          */
         dataList=new ArrayList<ReportIQuestiontem>();
-        dataList.add(new ReportIQuestiontem(("生活"),R.drawable.ic_people_black_24dp));
-        dataList.add(new ReportIQuestiontem(("工作"),R.drawable.ic_business_center_black_24dp));
-        dataList.add(new ReportIQuestiontem(("学习"),R.drawable.ic_school_black_24dp));
+        dataList.add(new ReportIQuestiontem(("这段时间看了哪些书？"),R.drawable.ic_people_black_24dp));
+        dataList.add(new ReportIQuestiontem(("这段时间过得开不开心？"),R.drawable.ic_043_medal));
+        dataList.add(new ReportIQuestiontem(("阶段计划的收益效果如何，是否需要改进？"),R.drawable.ic_business_center_black_24dp));
+          dataList.add(new ReportIQuestiontem(("自身的局限在哪里？"),R.drawable.ic_013_productivity));
+        dataList.add(new ReportIQuestiontem(("下一个阶段有什么目标吗?"),R.drawable.ic_school_black_24dp));
         /**
          * 适配器加载
          */
@@ -77,7 +78,7 @@ public class ReportFragment extends Fragment {
         mAdapter.setOnItemClickListener(new ReportAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Toast.makeText(getActivity(), "click " + dataList.get(position), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(getActivity(), "click " + dataList.get(position), Toast.LENGTH_SHORT).show();
             }
         });
         //动画效果/*

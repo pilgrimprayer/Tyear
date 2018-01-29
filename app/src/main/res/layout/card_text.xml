@@ -31,7 +31,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_margin="8dp"
                 android:text="今天为家人做了哪些事？"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <EditText
@@ -41,13 +41,27 @@
                 android:layout_below="@+id/text_title"
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:hint="请输入"
                 android:textSize="14sp"
 
                 />
 
+            <Button
+                android:id="@+id/text_label"
+                style="@style/label"
+                android:layout_width="35dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:elevation="0dp"
+                android:text="生活"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:layout_alignTop="@+id/text_title"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
 
 
         </RelativeLayout>

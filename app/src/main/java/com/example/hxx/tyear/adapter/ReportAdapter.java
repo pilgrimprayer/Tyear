@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by hxx on 2017/10/8.
  */
-
+//todo//position位置混乱
 public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder>  {
 
     private List<ReportIQuestiontem> mList;  //用户列表
@@ -61,6 +61,14 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
  /*       holder.textTitle.setText(mList.get(position).getName());
         holder.textContent.setText(mList.get(position).getSum()+"");*/
         holder.imageView.setImageResource(mList.get(position).getimageID());
+        holder.textTitle.setText(mList.get(position).getName());
+        if(position==0){
+            holder.textContent.setText("百年孤独，Java并发编程实战");
+        }
+        if(position==3){
+            holder.textContent.setText("情绪忽高忽低，和兴趣主义投机时，则热情奔放，消极时则垂头丧气,好高骛远,不肯埋头苦干");
+        }
+
         //ReportIQuestiontem grid = mList.get(position);//返回指定数组元素
 /*        holder.textView.setText(grid.getSubject());
         holder.contentView.setText(grid.getContent());*/

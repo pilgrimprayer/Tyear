@@ -7,8 +7,18 @@ package com.example.hxx.tyear.statisticsFragmentModel;
 public class ReportIQuestiontem {
     ReportIQuestiontem reportIQuestiontem;
     int id;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     private String name;
     private int imageID;
+
     boolean Is_attention=true;
 
 

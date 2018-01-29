@@ -11,4 +11,7 @@ public class LabelDao extends DaoImpl<Label> {
     public LabelDao(Context context) {
         super(context, Label.class);
     }
+
+
+
 }

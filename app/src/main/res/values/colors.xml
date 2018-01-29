@@ -13,6 +13,16 @@
         <color name="secondary_text">#757575</color>
         <color name="icons">#FFFFFF</color>
         <color name="divider">#BDBDBD</color>
-
-
+    <color name="test1">#2B2E4A</color>
+    <color name="pie_Chart2">#F85F73</color>
+    <color name="pie_Chart3">#FBE8D3</color>
+    <color name="pie_Chart4">#928A97</color>
+    <color name="pie_Chart5">#283C63</color>
+    <color name="colorGray">#c8c8c8</color>
+    <!--<color-array name="bea-com1" >-->
+        <!--<item >#2A363B</item>-->
+        <!--<item >#E84A5F</item>-->
+        <!--<item >#FF847C</item>-->
+        <!--<item >#FECEA8</item>-->
+    <!--</color-array>-->
 </resources>

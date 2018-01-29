@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+ >
+
+
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:id="@+id/rlCenter2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingBottom="6dp"
+
+            android:paddingTop="6dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            >
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="2017-11-23" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlTimeline"
+            android:layout_width="15dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp">
+
+            <TextView
+                android:id="@+id/tvTopLine"
+                android:layout_width="0.5dp"
+                android:layout_height="12dp"
+                android:layout_centerHorizontal="true"
+                android:background="#999" />
+
+            <TextView
+                android:id="@+id/tvDot"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:layout_below="@id/tvTopLine"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/timelline_dot_normal" />
+
+            <TextView
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"
+                android:layout_below="@id/tvDot"
+                android:layout_centerHorizontal="true"
+                android:background="#999" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlCenter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="6dp"
+            android:paddingRight="10dp"
+            android:paddingTop="6dp">
+
+            <TextView
+                android:id="@+id/q_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2014/06/24 20:55:28"
+                android:textColor="#999"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/q_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/q_title"
+                android:layout_marginTop="5dp"
+                android:text="快件在 深圳 ,准备送往下一站 深圳集散中心 [深圳市]"
+                android:textColor="@color/primary_text"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/rvTrace"-->
+        <!--android:layout_below="@+id/table_name_c"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:overScrollMode="never"/>-->
+
+</RelativeLayout>

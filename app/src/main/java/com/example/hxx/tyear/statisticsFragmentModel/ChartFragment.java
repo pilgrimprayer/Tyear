@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +14,18 @@ import android.widget.Toast;
 
 import com.example.hxx.tyear.R;
 import com.example.hxx.tyear.adapter.ChartAdapter;
+import com.example.hxx.tyear.model.bean.BaseQue;
+import com.example.hxx.tyear.model.bean.Content;
+import com.example.hxx.tyear.model.bean.Diary;
+import com.example.hxx.tyear.model.dao.BaseQueDao;
+import com.example.hxx.tyear.model.dao.DiaryDao;
 import com.github.mikephil.charting.charts.LineChart;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
@@ -38,15 +47,24 @@ public class ChartFragment extends Fragment {
     private LineChartView lineChart;
     String[] date = {"10-22","11-22","12-22","1-22","6-22","5-23","5-22"};//X轴的标注
     int[] score= {50,42,90,33,10,74,22};//图表的数据点
+    int[] colorData = {
+            Color.parseColor("#FFE3B7"),//白色
+            Color.parseColor("#840404"),//暗红
+            Color.parseColor("#CB0101"),//明红
+            Color.parseColor("#FFAF00")};//黄色
     private List<PointValue> mPointValues = new ArrayList<PointValue>();
     private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
     private LineChartView chartView;
-
-    private ArrayList<ChartItem> dataList;
+    private LineChartView chartView2;
+   private ArrayList<ChartItem> dataList;
+//private ArrayList<MineItem> dataList;
     RecyclerView mTableList;
     ChartAdapter mAdapter;
     private LineChart mLineChart;
     public  TextView textTitle;
+    List<BaseQue> quetionsList;
+
+
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
@@ -78,86 +96,156 @@ public class ChartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.sta_hellochart_item, container, false);
+        View view = inflater.inflate(R.layout.sta_chart_list, container, false);
+//
+//        chartView = (LineChartView)view.findViewById(R.id.chart);
+//        chartView2=(LineChartView)view.findViewById(R.id.chart2);
+//        initData2Chart();
 
-        chartView = (LineChartView)view.findViewById(R.id.chart);
 
-        initData2Chart();
-
-
-
- /*       lineChart = (LineChartView)view.findViewById(R.id.chart);
-        getAxisXLables();//获取x轴的标注
-        getAxisPoints();//获取坐标点
-        initLineChart();//初始化*/
+        mTableList=(RecyclerView)view.findViewById(R.id.chart_list);
+        mTableList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
 
 
-/*
-        //1.从xml中获取linechart的引用
-        mLineChart = (LineChart)view. findViewById(R.id.lineChart);
-        textTitle = (TextView) view.findViewById(R.id.chart_text_title);
-        //2.创建一个List集合，用来存放一条折线上的所有点
-        List<Entry> entries = new ArrayList<Entry>();
 
-        entries.add(new Entry(10,20));
-        entries.add(new Entry(20,30));
-        entries.add(new Entry(30,15));
-        entries.add(new Entry(40,50));
 
-        //3.将entries设置给LineDataSet数据集
-        LineDataSet dataSet = new LineDataSet(entries, "Label");
-
-        //4.将上面创建的LineDataSet对象设置给LineData
-        LineData lineData = new LineData(dataSet);
-
-        //5.把lineData设置给lineChart就可以显示出来折线图了，就像把adapter设置给listview一样
-        mLineChart.setData(lineData);
-
-        //mTableList=(RecyclerView)view.findViewById(R.id.table_list);
-       // mTableList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));*/
         /**
          * 数据源加载
          */
-/*
-//设置x轴的数据
-        ArrayList<String> xValues = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
-            xValues.add("" + i);
+        //todo//目前选所有的日记
+        DiaryDao mDiaryDao=new DiaryDao(getActivity());
+        List<Diary> diaryList = mDiaryDao.queryAll();
+
+        final Map<String, List<BaseQue>> map = new HashMap<String, List<BaseQue>>();
+        BaseQueDao baseQueDao = new BaseQueDao(getActivity());
+        List<BaseQue> baseQueList= baseQueDao.queryAllDin();//过滤重复项查询问题库里的所有问题
+//
+//        for(BaseQue baseQue:baseQueList){
+//            if(baseQue.getType()!=0){
+//                quetionsList.add(baseQue);//
+//            }
+//        }
+        for(Diary diary:diaryList){
+            List<BaseQue> diaryBaseQues = diary.getBaseQues();
+            for(BaseQue baseQue:diaryBaseQues) {
+                if(baseQue.getType()!=0) {//挑出非选
+                    String title = baseQue.getTitle();
+                    if (!map.containsKey(title)) {//若是第一次则初始值为零
+                        List<BaseQue> pointBaseQueList = new ArrayList<BaseQue>();
+
+                        pointBaseQueList.add(baseQue);
+                        map.put(title, pointBaseQueList);//计数+1
+                    } else {
+                        List<BaseQue> pointBaseQueList = map.get(title);
+                        pointBaseQueList.add(baseQue);
+                        map.put(title, pointBaseQueList);//计数+1
+                    }
+                }
+            }
         }
-        LineChart mLineChart = (LineChart) view.findViewById(R.id.lineChart);
+//题目,所有已在日记中的问题 但不代表都回答了
 
-        //设置y轴的数据
-        ArrayList<Entry> yValue = new ArrayList<>();
-        yValue.add(new Entry(13, 1));
-        yValue.add(new Entry(6, 2));
-        yValue.add(new Entry(3, 3));
-        yValue.add(new Entry(7, 4));
-        yValue.add(new Entry(2, 5));
-        yValue.add(new Entry(5, 6));
-        yValue.add(new Entry(12, 7));
-        //设置折线的名称
-        LineChartManager.setLineName("当月值");
-*/
-
-/*
         dataList=new ArrayList<ChartItem>();
-        dataList.add(new ChartItem(("生活"),R.drawable.ic_people_black_24dp));
-        dataList.add(new ChartItem(("工作"),R.drawable.ic_business_center_black_24dp));
-        dataList.add(new ChartItem(("学习"),R.drawable.ic_school_black_24dp));
-        *//**
+        for (Map.Entry<String, List<BaseQue>> entry: map.entrySet()) {
+            //一个map键值对应一个view
+                //一个view里有多个点
+            int chartType=0;
+            List<ChartPointItem> chartPointItemList=new ArrayList<ChartPointItem>();
+            List<BaseQue> baseQueListIn=entry.getValue();//属于此问题题目 的所有已记录问题获取
+            if(baseQueListIn.get(0).getType()==1){//单选
+                 for(BaseQue baseQue:baseQueListIn){//遍历这些问题 获取点：日期，回答
+
+                    chartType=0;
+                    for(Content content:baseQue.getContent()) {
+                        if (content.isChecked()==true){//若选择了则记录回答
+                        //str=str.Substring(i);
+                            ChartPointItem chartPointItem = new ChartPointItem(baseQue.getDiary().getDate().substring(5),content.getName());
+                            chartPointItemList.add(chartPointItem);
+                        }
+                    }
+                 }//最终获得这段日期内所有的点
+                //单选加入
+                // view创建元素：题目，线性/饼图，点List，纵坐标
+                //todo//此时无横坐标 因为通过选择来定 此时默认为这一周
+                ChartItem chartItem=new ChartItem(entry.getKey(),chartType,chartPointItemList,baseQueListIn.get(0).getContent());
+                dataList.add(chartItem);//chartPointItemList.size()=0的为这一周没有一个回答的。所以可以move掉//todo
+            }
+            if(baseQueListIn.get(0).getType()==2){//多选
+                chartType=1;
+                final Map<String,Integer > checkMap = new LinkedHashMap<String,Integer >();
+
+                for(BaseQue baseQue:baseQueListIn){//遍历这些问题 获取点：回答名字 总数
+
+                    int ci=0;
+
+
+                    for(Content content:baseQue.getContent()) {
+                        if (checkMap.get(content.getName()) == null) {//若是第一次则初始值为零
+
+                            checkMap.put(content.getName(), 0);
+                        }
+                        if (content.isChecked()==true){//若选择了则记录回答
+                            checkMap.put(content.getName(), checkMap.get(content.getName()) + 1);//计数+1
+//                            if (checkMap.get(content.getName()) == null) {//若是第一次则初始值为零
+//
+//                                checkMap.put(content.getName(), 0);
+//                                checkMap.put(content.getName(), checkMap.get(content.getName()) + 1);//计数+1
+//                            } else {
+//                                checkMap.put(content.getName(), checkMap.get(content.getName()) + 1);//计数+1
+//                            }
+                        }
+                    }
+                }//最终checkMap 回答名，回答数量
+                int ci=0;
+                int j=0,doneSum=0,undoneSum;
+                int needSum=baseQueListIn.get(0).getContent().size()*7;
+         List<PieData> pieDataList = new ArrayList<>();
+                for (Map.Entry<String,Integer> entryCheck: checkMap.entrySet()) {
+                    PieData pieData=new PieData(entryCheck.getKey(),entryCheck.getValue(),colorData[ci]);
+                    ci++;
+                    pieData.setRate((float)entryCheck.getValue() / (float)needSum);
+                    doneSum+=entryCheck.getValue();
+                    pieDataList.add(pieData);
+                }
+                //最后一个是未完成的
+
+                undoneSum=needSum -doneSum;//todo//有选日期的功能后总数要变
+                float rate=(float)doneSum/(float)(undoneSum+doneSum);
+                PieData pieData=new PieData("未完成",undoneSum,colorData[ci]);
+                pieData.setRate((float)undoneSum / (float)needSum);
+                pieDataList.add(pieData);
+                // view创建元素：题目，线性/饼图，点List，纵坐标
+                //todo//此时无横坐标 因为通过选择来定 此时默认为这一周
+                ChartItem chartItem=new ChartItem(entry.getKey(),chartType,checkMap,pieDataList);
+                chartItem.setRate(rate);//完成度
+                dataList.add(chartItem);//checkmap.size()=0的为这一周没有一个回答的。所以可以move掉//todo
+            }
+
+
+   }
+        List<Diary> diaryList2 = mDiaryDao.queryAll();
+        for(BaseQue baseQue:baseQueList){
+//            if(baseQue.getType()!=0){
+//                quetionsList.add(baseQue);//
+//            }
+    }
+
+//        dataList.add(new ChartItem(("提醒"),R.drawable.ic_timer_black_24dp,0));
+//        dataList.add(new ChartItem(("密码锁"),R.drawable.ic_lock_black_24dp,1));
+
+        /**
          * 适配器加载
-         *//*
-        mAdapter = new ChartAdapter(dataList);
+         */
+        mAdapter = new ChartAdapter(dataList,getActivity());
         mAdapter.setOnItemClickListener(new ChartAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Toast.makeText(getActivity(), "click " + dataList.get(position), Toast.LENGTH_SHORT).show();
             }
         });
-        //动画效果*//*
-*//*        mTableList.setItemAnimator(new DefaultItemAnimator());*//*
-        mTableList.setAdapter(mAdapter);*/
+
+        mTableList.setAdapter(mAdapter);
 
         return view;  /* View view = inflater.inflate(R.layout.statistic_table_list, container, false);*/
 
@@ -256,6 +344,8 @@ public class ChartFragment extends Fragment {
          * 简单模拟的数据
          */
         List<PointValue> values = new ArrayList<>();
+        //要点出的数据集
+
         values.add(new PointValue(1, 3));
         values.add(new PointValue(2, 1));
         values.add(new PointValue(3,2));
@@ -267,7 +357,9 @@ public class ChartFragment extends Fragment {
         lines.add(line);
         //折线集合
         LineChartData data = new LineChartData();
-        data.setLines(lines);
+        data.setLines(lines);//因为可能有多条线 这里只有一条
+
+
         //坐标轴
         Axis axisX = new Axis();
         //setHasLines(true),设定是否有网格线
@@ -275,11 +367,46 @@ public class ChartFragment extends Fragment {
         //为两个坐标系设定名称
         axisX.setName("日期 ");
         axisY.setName("分值");
+        axisX.setValues(mAxisXValues);  //填充X轴的坐标名称
         //设置图标所在位置
         data.setAxisXBottom(axisX);
         data.setAxisYLeft(axisY);
         //将数据添加到View中
         chartView.setLineChartData(data);
+
+
+        //第二个demo
+        chartView2.setOnValueTouchListener(listener);
+        /**
+         * 简单模拟的数据
+         */
+        List<PointValue> values2 = new ArrayList<>();
+        values2.add(new PointValue(1, 0));
+        values2.add(new PointValue(2, 3));
+        values2.add(new PointValue(3,1));
+        values2.add(new PointValue(4, 2));
+        //setCubic(true),true是曲线型，false是直线连接
+        Line line2 = new Line(values).setColor(Color.RED).setCubic(true);
+        //一条折线加入折线集合
+        List<Line> lines2 = new ArrayList<>();
+        lines2.add(line2);
+        //折线集合
+        LineChartData data2 = new LineChartData();
+        data2.setLines(lines);
+        //坐标轴
+        Axis axisX2 = new Axis();
+        //setHasLines(true),设定是否有网格线
+        Axis axis2Y = new Axis().setHasLines(false);
+        //为两个坐标系设定名称
+        axisX2.setName("日期 ");
+        axis2Y.setName("分值");
+        //设置图标所在位置
+        data2.setAxisXBottom(axisX2);
+        data2.setAxisYLeft(axis2Y);
+        //将数据添加到View中
+        chartView2.setLineChartData(data2);
+
+
     }
 
     /**

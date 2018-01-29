@@ -5,93 +5,202 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.hxx.tyear.R;
+import com.example.hxx.tyear.statisticsFragmentModel.TableGroupItem;
 import com.example.hxx.tyear.statisticsFragmentModel.TableNameItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by hxx on 2017/10/8.
  */
 
-public class TableAdapter extends RecyclerView.Adapter<TableAdapter.ViewHolder>  {
+public class TableAdapter extends RecyclerView.Adapter<BaseViewHolder>  {
 
-    private List<TableNameItem> mList;  //用户列表
-    private Context mContext;
-
-    public TableAdapter(List<TableNameItem> list){
-
-        this.mList = list;
+    private List<TableNameItem> labelList;  //用户列表
+    private ArrayList<TableGroupItem> labelGroupList;
+    private Context context;
+    private OnScrollListener mOnScrollListener;
+    public TableAdapter(Context context,List<TableNameItem> list,ArrayList<TableGroupItem> labelGroupList){
+        this.context = context;
+        this.labelList = list;
+        this.labelGroupList=labelGroupList;
     }
 
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sta_table_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
-
-    }
-    //内部类ViewHolder 传入构造参数View
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public final TextView textName;
-        public final TextView textSum;
-        public final ImageView imageView;
-        public final View mView;
-        public TableNameItem mItem;
-        public  ViewHolder(View view) {
-            super(view);
-            mView = view;
-            textName = (TextView) view.findViewById(R.id.table_name);//加载每个子项里的内容-题目！！
-            textSum = (TextView) view.findViewById(R.id.table_sum);//加载每个子项里的内容-题目！！
-           imageView=(ImageView) view.findViewById(R.id.table_open);//加载每个子项里的内容-内容！！
-
+//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sta_table_item_parent, parent, false);
+//        ViewHolder viewHolder = new ViewHolder(view);
+//        return viewHolder;
+        View view = null;
+        switch (viewType){//传入类型 判断
+            case TableNameItem.PARENT_ITEM://父项目
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sta_table_item_parent, parent, false);
+                return new ParentViewHolder(context, view);
+            case TableNameItem.CHILD_ITEM:///子项目
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sta_table_item_child, parent, false);
+                return new ChildViewHolder(context, view);
+            default:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sta_table_item_parent, parent, false);
+                return new ParentViewHolder(context, view);
         }
     }
+
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        switch (getItemViewType(position)){
+            case TableNameItem.PARENT_ITEM:
+                ParentViewHolder parentViewHolder = (ParentViewHolder) holder;
+                parentViewHolder.bindView(labelList.get(position), position, itemClickListener);
+                break;
+            case TableNameItem.CHILD_ITEM:
+                ChildViewHolder childViewHolder = (ChildViewHolder) holder;
+                childViewHolder.bindView(labelList.get(position), position);
+                break;
+        }
+    }
+
 
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        //对子项目赋值 子项滚动屏幕时执行
-        holder.mItem = mList.get(position);
-        holder.textName.setText(mList.get(position).getName());
-        holder.textSum.setText(mList.get(position).getSum()+"");
-
-        //TableNameItem grid = mList.get(position);//返回指定数组元素
-/*        holder.textView.setText(grid.getSubject());
-        holder.contentView.setText(grid.getContent());*/
-        //holder.textView.setText(titles[position]); //对textview控件设置内容 ：数组title
-        //holder.contentView.setText("sd");
-
-        if(mOnItemClickListener != null){
-            //为ItemView设置监听器
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = holder.getLayoutPosition(); // 1
-                    mOnItemClickListener.onItemClick(holder.itemView,position); // 2
-                }
-            });
-        }
+    public int getItemViewType(int position) {
+        return labelList.get(position).getType();
     }
-
-
 
     @Override
     public int getItemCount() {
-        return mList.size();
+        return labelList.size();
     }
-    public interface OnItemClickListener{
-        void onItemClick(View view, int position);
-    }
-    private OnItemClickListener mOnItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener){
-        this.mOnItemClickListener = mOnItemClickListener;
+
+
+    private ItemClickListener itemClickListener = new ItemClickListener() {//点击时
+        @Override
+        public void onExpandChildren(TableNameItem bean) {
+            int position = getCurrentPosition(bean.getID());//确定当前点击的item位置
+            int sum=bean.getTableGroupItemList().size();//最后一个bean位置
+            int starttFromend=sum-1;
+            boolean isNewDay=true;
+            for(;starttFromend>=0;starttFromend--){//依次增加
+                //遍历group得从后往前遍历 因为add是往前加
+                TableGroupItem tableGroupItem = bean.getTableGroupItemList().get(starttFromend);
+                TableNameItem children = getChildTableNameItem(bean);//获取要展示的子布局数据对象，注意区分onHideChildren方法中的getChildBean()。
+
+                String date = new String(tableGroupItem.getDate());
+                children.setChildTitle(tableGroupItem.getQuestion());//
+                for(String conent:tableGroupItem.getContens()){
+                    children.addContents(conent+"+");
+                }
+                String str=children.getContents();
+                str=str.substring(0,str.length()-1);
+                children.setContents( str);
+
+                children.setDate(tableGroupItem.getDate());
+
+              if(starttFromend==0||!tableGroupItem.getDate().equals(bean.getTableGroupItemList().get(starttFromend-1).getDate())){//若是最前一个或是比前一个日期不同
+
+                    children.setChildType(1);
+                }
+                else{
+                    children.setChildType(0);
+                }
+                if (children == null) {
+                    return;
+                }
+                add(children, position + 1);//在当前的item下方插入：数据源数组增加 刷新list
+            }
+            if (position == labelList.size() - 2 && mOnScrollListener != null) { //如果点击的item为最后一个
+                mOnScrollListener.scrollTo(position + 1);//向下滚动，使子布局能够完全展示
+            }
+        }
+
+        @Override
+        public void onHideChildren(TableNameItem bean) {
+            int position = getCurrentPosition(bean.getID());//确定当前点击的item位置
+            TableNameItem children = bean.getChildBean();//获取子布局对象
+            if (children == null) {
+                return;
+            }
+            int curPositon;
+            curPositon=position;
+            for(int i=0;i<bean.getTableGroupItemList().size();i++) {//加多个
+                remove(curPositon + 1);//删除
+              //  curPositon++;
+            }
+//            remove(position + 1);//删除
+            if (mOnScrollListener != null) {
+                mOnScrollListener.scrollTo(position);
+            }
+        }
+    };
+
+    /**
+     * 在父布局下方插入一条数据
+     * @param bean
+     * @param position
+     */
+    public void add(TableNameItem bean, int position) {
+
+
+            labelList.add(position, bean);
+
+        notifyItemInserted(position);
+    }
+
+    /**
+     *移除子布局数据
+     * @param position
+     */
+    protected void remove(int position) {
+
+        labelList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    /**
+     * 确定当前点击的item位置并返回
+     * @param uuid
+     * @return
+     */
+    protected int getCurrentPosition(String uuid) {
+        for (int i = 0; i < labelList.size(); i++) {
+            if (uuid.equalsIgnoreCase(labelList.get(i).getID())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 封装子布局数据对象并返回
+     * 注意，此处只是重新封装一个TableNameItem对象，为了标注Type为子布局数据，进而展开，展示数据
+     * 要和onHideChildren方法里的getChildBean()区分开来
+     * @param bean
+     * @return
+     */
+    private TableNameItem getChildTableNameItem(TableNameItem bean){
+        TableNameItem child = new TableNameItem(bean.getName(),bean.getSum());
+        child.setType(1);
+
+        return child;
+    }
+
+    /**
+     * 滚动监听接口
+     */
+    public interface OnScrollListener{
+        void scrollTo(int pos);
+    }
+
+    public void setOnScrollListener(OnScrollListener onScrollListener){
+        this.mOnScrollListener = onScrollListener;
     }
 }
+
+    
+

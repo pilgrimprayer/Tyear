@@ -7,40 +7,54 @@
 
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/rela1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
 
-        <TextView
-            android:id="@+id/chart_text_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_margin="8dp"
-            android:text="统计：今日心情"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+        <!--<TextView-->
+            <!--android:id="@+id/chart_text_title"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentTop="true"-->
+            <!--android:layout_margin="8dp"-->
+            <!--android:text="统计：今天精神状态如何？"-->
+            <!--android:textSize="16sp"-->
+            <!--android:textStyle="bold" />-->
 
-        <!--    <EditText
-                android:id="@+id/text_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/text_title"
-                android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:text="和老爸出去逛街，帮他挑了很多衣服嘻嘻帮他挑了很多衣服嘻嘻帮他挑了很多衣服嘻嘻"
-                android:textSize="14sp" />-->
-        <lecho.lib.hellocharts.view.LineChartView
-            android:id="@+id/chart"
-            android:layout_below="@+id/chart_text_title"
-            android:layout_width="match_parent"
-            android:layout_height="300dp" />
+ <!--<lecho.lib.hellocharts.view.LineChartView-->
+            <!--android:id="@+id/chart"-->
+            <!--android:layout_below="@+id/chart_text_title"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="300dp" />-->
 
 
 
-    </RelativeLayout>
+<!--</RelativeLayout>-->
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/rela2"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/rela1"-->
+        <!--android:layout_marginTop="18dp">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/chart_text_title2"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentTop="true"-->
+            <!--android:layout_margin="8dp"-->
+            <!--android:text="统计：今天锻炼身体了吗？"-->
+            <!--android:textSize="16sp"-->
+            <!--android:textStyle="bold" />-->
+
+        <!--<lecho.lib.hellocharts.view.LineChartView-->
+            <!--android:id="@+id/chart2"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="300dp"-->
+            <!--android:layout_below="@+id/chart_text_title2" />-->
 
 
+    <!--</RelativeLayout>-->
 </RelativeLayout>

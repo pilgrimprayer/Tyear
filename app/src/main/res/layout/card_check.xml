@@ -31,8 +31,22 @@
                 android:layout_margin="8dp"
                 android:text="今天为四级做了哪些努力"
 
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
+            <Button
+                android:id="@+id/check_label"
+                style="@style/label"
+                android:layout_width="35dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="18dp"
+                android:layout_marginRight="18dp"
+                android:elevation="0dp"
+                android:text="生活"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:layout_alignTop="@+id/textView4"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
 
             <CheckBox
                 android:id="@+id/checkBox1"
